@@ -182,21 +182,25 @@
         }
 
         function renderAreaCharts() {
-            // Get RECEITA line data (linha_id = 1)
-            const receita = areaData.linhas.find(l => l.id === 1);
-            if (!receita) return;
+            try {
+                // Get RECEITA line data (linha_id = 1)
+                const receita = areaData.linhas.find(l => l.id === 1);
+                if (!receita || !receita.meses || receita.meses.length === 0) {
+                    console.warn('No RECEITA data available');
+                    return;
+                }
 
-            const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-            const planejado = [];
-            const realizado = [];
-            const variacao = [];
+                const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+                const planejado = [];
+                const realizado = [];
+                const variacao = [];
 
-            for (let mes = 1; mes <= 12; mes++) {
-                const mes_data = receita.meses.find(m => m.mes === mes);
-                planejado.push(mes_data ? (mes_data.valor_planejado / 1000) : 0);
-                realizado.push(mes_data ? (mes_data.valor_realizado / 1000) : 0);
-                variacao.push(mes_data ? (mes_data.variancia / 1000) : 0);
-            }
+                for (let mes = 1; mes <= 12; mes++) {
+                    const mes_data = receita.meses.find(m => m.mes === mes);
+                    planejado.push(mes_data ? (mes_data.valor_planejado / 1000) : 0);
+                    realizado.push(mes_data ? (mes_data.valor_realizado / 1000) : 0);
+                    variacao.push(mes_data ? (mes_data.variancia / 1000) : 0);
+                }
 
             // Line Chart
             const lineCtx = document.getElementById('lineChart').getContext('2d');
@@ -257,79 +261,115 @@
                     scales: { y: { beginAtZero: true } }
                 }
             });
+            } catch (err) {
+                console.error('Error rendering area charts:', err);
+            }
         }
 
         function renderDataTable() {
-            const tbody = document.getElementById('dataTable');
-            tbody.innerHTML = '';
+            try {
+                const tbody = document.getElementById('dataTable');
+                if (!tbody) {
+                    console.warn('dataTable element not found');
+                    return;
+                }
+                tbody.innerHTML = '';
 
-            areaData.linhas.forEach(linha => {
-                let totalPlanejado = 0;
-                let totalRealizado = 0;
-
-                for (let mes = 1; mes <= 12; mes++) {
-                    const mes_data = linha.meses.find(m => m.mes === mes);
-                    if (mes_data) {
-                        totalPlanejado += mes_data.valor_planejado;
-                        totalRealizado += mes_data.valor_realizado;
-                    }
+                if (!areaData.linhas || areaData.linhas.length === 0) {
+                    console.warn('No linhas data available');
+                    return;
                 }
 
-                const variacao = totalRealizado - totalPlanejado;
-                const percentual = totalPlanejado !== 0 ? (totalRealizado / totalPlanejado * 100) : 0;
+                areaData.linhas.forEach(linha => {
+                    let totalPlanejado = 0;
+                    let totalRealizado = 0;
 
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${htmlEscape(linha.nome)}</td>
-                    <td class="text-end">R$ ${(totalPlanejado / 1000).toFixed(1)}k</td>
-                    <td class="text-end">R$ ${(totalRealizado / 1000).toFixed(1)}k</td>
-                    <td class="text-end ${variacao >= 0 ? 'positive' : 'negative'}">R$ ${(variacao / 1000).toFixed(1)}k</td>
-                    <td class="text-end ${percentual >= 100 ? 'positive' : 'negative'}">${percentual.toFixed(1)}%</td>
-                `;
-                tbody.appendChild(row);
-            });
+                    for (let mes = 1; mes <= 12; mes++) {
+                        const mes_data = linha.meses.find(m => m.mes === mes);
+                        if (mes_data) {
+                            totalPlanejado += mes_data.valor_planejado;
+                            totalRealizado += mes_data.valor_realizado;
+                        }
+                    }
+
+                    const variacao = totalRealizado - totalPlanejado;
+                    const percentual = totalPlanejado !== 0 ? (totalRealizado / totalPlanejado * 100) : 0;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${htmlEscape(linha.nome)}</td>
+                        <td class="text-end">R$ ${(totalPlanejado / 1000).toFixed(1)}k</td>
+                        <td class="text-end">R$ ${(totalRealizado / 1000).toFixed(1)}k</td>
+                        <td class="text-end ${variacao >= 0 ? 'positive' : 'negative'}">R$ ${(variacao / 1000).toFixed(1)}k</td>
+                        <td class="text-end ${percentual >= 100 ? 'positive' : 'negative'}">${percentual.toFixed(1)}%</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (err) {
+                console.error('Error rendering data table:', err);
+            }
         }
 
         function renderComparativeCharts() {
             if (!comparativeData.receita || !comparativeData.ebitda) return;
 
-            // RECEITA Chart
-            renderComparativeChart('comparativeChart1', comparativeData.receita);
+            try {
+                // RECEITA Chart
+                renderComparativeChart('comparativeChart1', comparativeData.receita);
 
-            // EBITDA Chart
-            renderComparativeChart('comparativeChart2', comparativeData.ebitda);
+                // EBITDA Chart
+                renderComparativeChart('comparativeChart2', comparativeData.ebitda);
+            } catch (err) {
+                console.error('Error rendering comparative charts:', err);
+            }
         }
 
         function renderComparativeChart(canvasId, data) {
-            const areas = ['Adm', 'Vendas', 'Marketing', 'RH', 'Ops', 'Financeiro', 'Tech', 'Qualidade'];
-            const monthIndex = 12; // Last month data
+            try {
+                const areas = ['Adm', 'Vendas', 'Marketing', 'RH', 'Ops', 'Financeiro', 'Tech', 'Qualidade'];
+                const monthIndex = 12; // Last month data
 
-            const valores = data.areas.map(area => {
-                const mes_data = area.meses.find(m => m.mes === monthIndex);
-                return mes_data ? mes_data.valor_realizado / 1000 : 0;
-            });
-
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: areas,
-                    datasets: [{
-                        label: `${data.linha_nome} (Realizado - R$ mil)`,
-                        data: valores,
-                        backgroundColor: '#667eea',
-                        borderColor: '#764ba2',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'top' } },
-                    scales: { y: { beginAtZero: true } }
+                if (!data.areas || data.areas.length === 0) {
+                    console.warn('No areas data for chart:', canvasId);
+                    return;
                 }
-            });
+
+                const valores = data.areas.map(area => {
+                    if (!area.meses || area.meses.length === 0) return 0;
+                    const mes_data = area.meses.find(m => m.mes === monthIndex);
+                    return mes_data ? mes_data.valor_realizado / 1000 : 0;
+                });
+
+                const canvasEl = document.getElementById(canvasId);
+                if (!canvasEl) {
+                    console.warn('Canvas element not found:', canvasId);
+                    return;
+                }
+
+                const ctx = canvasEl.getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: areas,
+                        datasets: [{
+                            label: `${data.linha_nome} (Realizado - R$ mil)`,
+                            data: valores,
+                            backgroundColor: '#667eea',
+                            borderColor: '#764ba2',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'top' } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            } catch (err) {
+                console.error('Error in renderComparativeChart:', err);
+            }
         }
 
         function htmlEscape(text) {
