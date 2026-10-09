@@ -57,11 +57,17 @@ class ExcelParser
             $relsDom = new \DOMDocument();
             $relsDom->loadXML($relsXml);
             $relsXpath = new \DOMXPath($relsDom);
-            $relsXpath->registerNamespace('r', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
+            $relsXpath->registerNamespace('rel', 'http://schemas.openxmlformats.org/package/2006/relationships');
 
-            $rels = $relsXpath->query("//r:Relationship[@Id='{$targetSheetId}']");
+            $rels = $relsXpath->query("//rel:Relationship[@Id='{$targetSheetId}']");
+
+            // Fallback: try without namespace
             if ($rels->length === 0) {
-                throw new \Exception("Sheet relationship not found");
+                $rels = $relsXpath->query("//*[@Id='{$targetSheetId}']");
+            }
+
+            if ($rels->length === 0) {
+                throw new \Exception("Sheet relationship not found for ID: {$targetSheetId}");
             }
 
             $sheetFile = $rels->item(0)->getAttribute('Target');
