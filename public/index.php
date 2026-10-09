@@ -43,14 +43,16 @@ $router->post('/api/login', function() {
     $controller->login();
 });
 
-$router->get('/register', function() {
+$router->get('/admin/users', function() {
+    requireAuth();
     $controller = new \App\Controllers\AuthController();
-    $controller->showRegister();
+    $controller->showUserManagement();
 });
 
-$router->post('/api/register', function() {
+$router->post('/api/admin/users', function() {
+    requireAuth();
     $controller = new \App\Controllers\AuthController();
-    $controller->register();
+    $controller->createUser();
 });
 
 $router->get('/home', function() {

@@ -71,6 +71,11 @@ class AuthController
                 }
             }
 
+            // Store admin flag in session if applicable
+            if ($user) {
+                $_SESSION['is_admin'] = $user['is_admin'] ?? false;
+            }
+
             if (!$user) {
                 http_response_code(401);
                 echo json_encode(['success' => false, 'error' => 'Usuário ou senha inválidos']);
@@ -110,25 +115,32 @@ class AuthController
     }
 
     /**
-     * Show register form
+     * Show user management page (admin only)
      */
-    public function showRegister(): void
+    public function showUserManagement(): void
     {
-        // Redirect to home if already logged in
-        if (!empty($_SESSION['user_id'])) {
-            header('Location: /home');
+        if (empty($_SESSION['is_admin'])) {
+            header('HTTP/1.1 403 Forbidden');
+            echo 'Acesso negado';
             exit;
         }
 
-        include __DIR__ . '/../../views/register.php';
+        $users = $this->loadUsers();
+        include __DIR__ . '/../../views/admin_users.php';
     }
 
     /**
-     * Handle registration API request
+     * Create new user (admin only)
      */
-    public function register(): void
+    public function createUser(): void
     {
         header('Content-Type: application/json');
+
+        if (empty($_SESSION['is_admin'])) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Acesso negado']);
+            return;
+        }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -149,7 +161,6 @@ class AuthController
             $password = trim($input['password']);
             $name = trim($input['name']);
 
-            // Validation
             if (strlen($username) < 3) {
                 http_response_code(400);
                 echo json_encode(['success' => false, 'error' => 'Usuário deve ter no mínimo 3 caracteres']);
@@ -162,7 +173,6 @@ class AuthController
                 return;
             }
 
-            // Load existing users and check if user already exists
             $users = $this->loadUsers();
             foreach ($users as $u) {
                 if ($u['username'] === $username) {
@@ -172,27 +182,22 @@ class AuthController
                 }
             }
 
-            // Add new user
             $newUser = [
                 'username' => $username,
-                'password' => $password, // In production, use password_hash()
+                'password' => $password,
                 'name' => $name,
-                'created_at' => date('Y-m-d')
+                'created_at' => date('Y-m-d'),
+                'is_admin' => false
             ];
 
             $users[] = $newUser;
 
-            // Save users
             if ($this->saveUsers($users)) {
                 http_response_code(201);
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Cadastro realizado com sucesso!',
-                    'user' => $username
-                ]);
+                echo json_encode(['success' => true, 'message' => 'Usuário criado com sucesso!']);
             } else {
                 http_response_code(500);
-                echo json_encode(['success' => false, 'error' => 'Erro ao salvar cadastro']);
+                echo json_encode(['success' => false, 'error' => 'Erro ao salvar usuário']);
             }
 
         } catch (\Exception $e) {

@@ -189,6 +189,18 @@
                 <div class="card-btn">Acessar →</div>
             </div>
         </a>
+
+        <?php if (!empty($_SESSION['is_admin'])): ?>
+        <!-- Users Management Card (Admin Only) -->
+        <a href="/admin/users" class="card-custom">
+            <div class="card-icon">👥</div>
+            <div class="card-content">
+                <h2>Gerenciar Usuários</h2>
+                <p>Crie e gerencie contas de usuários do sistema. Apenas administradores têm acesso.</p>
+                <div class="card-btn">Acessar →</div>
+            </div>
+        </a>
+        <?php endif; ?>
     </div>
 
     <!-- Footer -->

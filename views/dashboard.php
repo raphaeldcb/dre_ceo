@@ -51,8 +51,8 @@
             color: #b0d0e0;
             text-transform: uppercase;
         }
-        .positive { color: #4ade80; }
-        .negative { color: #f87171; }
+        .positive { color: #a0c0d0; }
+        .negative { color: #808090; }
         .tab-content { padding: 20px 0; }
         .form-select {
             background: #1a4a6a;
@@ -348,8 +348,8 @@
                         {
                             label: 'Planejado',
                             data: planejado,
-                            borderColor: '#667eea',
-                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderColor: '#6080a0',
+                            backgroundColor: 'rgba(96, 128, 160, 0.1)',
                             tension: 0.4,
                             fill: true,
                             pointRadius: 4,
@@ -358,8 +358,8 @@
                         {
                             label: 'Realizado',
                             data: realizado,
-                            borderColor: '#764ba2',
-                            backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                            borderColor: '#7090a8',
+                            backgroundColor: 'rgba(112, 144, 168, 0.1)',
                             tension: 0.4,
                             fill: true,
                             pointRadius: 4,
@@ -385,7 +385,7 @@
                         {
                             label: 'Variação (R$ mil)',
                             data: variacao,
-                            backgroundColor: variacao.map(v => v >= 0 ? '#28a745' : '#dc3545'),
+                            backgroundColor: variacao.map(v => v >= 0 ? '#9090b0' : '#7070a0'),
                             borderRadius: 4
                         }
                     ]
@@ -531,8 +531,8 @@
                         datasets: [{
                             label: `${data.linha_nome} (Realizado - R$ mil)`,
                             data: valores,
-                            backgroundColor: '#667eea',
-                            borderColor: '#764ba2',
+                            backgroundColor: '#7090a8',
+                            borderColor: '#6080a0',
                             borderWidth: 1,
                             borderRadius: 4
                         }]

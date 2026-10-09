@@ -203,12 +203,6 @@
                 </button>
             </form>
 
-            <hr>
-            <div style="text-align: center;">
-                <p class="text-muted" style="margin: 0;">
-                    Não tem conta? <a href="/register" class="register-link">Cadastre-se aqui</a>
-                </p>
-            </div>
         </div>
     </div>
 
