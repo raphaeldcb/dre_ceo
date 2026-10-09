@@ -43,10 +43,10 @@ class DashboardService
                 'meses' => []
             ];
 
-            // Add monthly values for this line
+            // Add monthly values for this line (as array, not object)
             if (isset($valoresByLinha[$linha->id])) {
                 foreach ($valoresByLinha[$linha->id] as $valor) {
-                    $linhaData['meses'][$valor->mes] = [
+                    $linhaData['meses'][] = [
                         'mes' => $valor->mes,
                         'valor_planejado' => $valor->valor_planejado,
                         'valor_realizado' => $valor->valor_realizado,
@@ -106,7 +106,7 @@ class DashboardService
 
             if (isset($valuesByArea[$areaId])) {
                 foreach ($valuesByArea[$areaId] as $valor) {
-                    $areaData['meses'][$valor->mes] = [
+                    $areaData['meses'][] = [
                         'mes' => $valor->mes,
                         'valor_planejado' => $valor->valor_planejado,
                         'valor_realizado' => $valor->valor_realizado,
