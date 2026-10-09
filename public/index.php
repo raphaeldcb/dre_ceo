@@ -32,49 +32,79 @@ define('BASE_PATH', $basePath);
 // Initialize router and define routes
 $router = new \App\Utils\Router();
 
-// Upload routes
+// Auth routes
+$router->get('/', function() {
+    $controller = new \App\Controllers\AuthController();
+    $controller->showLogin();
+});
+
+$router->post('/api/login', function() {
+    $controller = new \App\Controllers\AuthController();
+    $controller->login();
+});
+
+$router->get('/home', function() {
+    $controller = new \App\Controllers\AuthController();
+    $controller->showHome();
+});
+
+$router->get('/logout', function() {
+    $controller = new \App\Controllers\AuthController();
+    $controller->logout();
+});
+
+// Upload routes (protected)
 $router->get('/upload', function() {
+    requireAuth();
     $controller = new \App\Controllers\UploadController();
     $controller->showForm();
 });
 
 $router->post('/api/upload', function() {
+    requireAuth();
     $controller = new \App\Controllers\UploadController();
     $controller->handle();
 });
 
-// Dashboard routes
+// Dashboard routes (protected)
 $router->get('/dashboard', function() {
+    requireAuth();
     $controller = new \App\Controllers\DashboardController();
     $controller->index();
 });
 
-// Dashboard API routes
+// Dashboard API routes (protected)
 $router->get('/api/dashboard/area-data', function() {
+    requireAuth();
     $controller = new \App\Controllers\DashboardController();
     $controller->apiAreaData();
 });
 
 $router->get('/api/dashboard/comparative-data', function() {
+    requireAuth();
     $controller = new \App\Controllers\DashboardController();
     $controller->apiComparativeData();
 });
 
 $router->get('/api/dashboard/overview-summary', function() {
+    requireAuth();
     $controller = new \App\Controllers\DashboardController();
     $controller->apiOverviewSummary();
 });
 
 $router->get('/api/dashboard/export-year', function() {
+    requireAuth();
     $controller = new \App\Controllers\DashboardController();
     $controller->apiExportYear();
 });
 
-// Default route
-$router->get('/', function() {
-    echo '<h1>DRE CEO Dashboard</h1>';
-    echo '<p><a href="/upload">📤 Upload DRE</a> | <a href="/dashboard">📊 Dashboard</a></p>';
-});
+// Helper function to check authentication
+function requireAuth() {
+    if (empty($_SESSION['user_id'])) {
+        header('Location: /');
+        exit;
+    }
+}
 
 // Dispatch the request
 $router->dispatch();
