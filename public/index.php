@@ -23,6 +23,10 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+// Get base path (set by root index.php or set default)
+$basePath = $_SESSION['base_path'] ?? '';
+define('BASE_PATH', $basePath);
+
 // Initialize router and define routes
 $router = new \App\Utils\Router();
 
