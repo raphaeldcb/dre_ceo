@@ -8,232 +8,137 @@ class ExcelParser
     private const START_ROW = 3;
     private const END_ROW = 13;
 
-    /**
-     * Parse DRE Excel file (.xlsx) using only PHP native functions
-     * .xlsx is a ZIP file containing XML files
-     *
-     * @param string $filePath Path to .xlsx file
-     * @return array ['data' => [...], 'linhas_count' => int, 'errors' => []]
-     * @throws Exception If file or sheet not found
-     */
     public function parse(string $filePath): array
     {
         if (!file_exists($filePath)) {
             throw new \Exception("File not found: {$filePath}");
         }
 
-        // Open .xlsx as ZIP
         $zip = new \ZipArchive();
         if (!$zip->open($filePath)) {
-            throw new \Exception("Failed to open Excel file as ZIP");
+            throw new \Exception("Failed to open Excel file");
         }
 
-        // Read workbook.xml to find sheet relationships
-        $workbookXml = $zip->getFromName('xl/workbook.xml');
-        if (!$workbookXml) {
-            throw new \Exception("workbook.xml not found in Excel file");
-        }
+        try {
+            // Read workbook.xml
+            $workbookXml = $zip->getFromName('xl/workbook.xml');
+            if (!$workbookXml) {
+                throw new \Exception("workbook.xml not found");
+            }
 
-        // Read relationships to find sheet file names
-        $relsXml = $zip->getFromName('xl/_rels/workbook.xml.rels');
-        if (!$relsXml) {
-            throw new \Exception("workbook.xml.rels not found in Excel file");
-        }
+            // Parse and find sheet
+            $dom = new \DOMDocument();
+            $dom->loadXML($workbookXml);
+            $xpath = new \DOMXPath($dom);
+            $xpath->registerNamespace('wb', 'http://schemas.openxmlformats.org/spreadsheetml/2006/main');
+            $xpath->registerNamespace('r', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
 
-        // Parse workbook.xml to find sheet name
-        $workbookDom = new \DOMDocument();
-        $workbookDom->loadXML($workbookXml);
-        $sheetName = $this->findSheetFile($workbookDom, $relsXml);
+            // Find all sheets and locate our target
+            $sheets = $xpath->query('//wb:sheet');
+            $targetSheetId = null;
 
-        if (!$sheetName) {
-            throw new \Exception("Sheet '" . self::EXPECTED_SHEET . "' not found in workbook");
-        }
-
-        // Read the sheet XML
-        $sheetXml = $zip->getFromName("xl/worksheets/{$sheetName}");
-        if (!$sheetXml) {
-            throw new \Exception("Sheet file not found: {$sheetName}");
-        }
-
-        $zip->close();
-
-        // Parse sheet data
-        return $this->parseSheetXml($sheetXml);
-    }
-
-    /**
-     * Find the sheet file corresponding to the expected sheet name
-     */
-    private function findSheetFile(\DOMDocument $workbookDom, string $relsXml): ?string
-    {
-        $xpath = new \DOMXPath($workbookDom);
-        $xpath->registerNamespace('wb', 'http://schemas.openxmlformats.org/spreadsheetml/2006/main');
-
-        // Find all sheets - use getElementByTagName as backup
-        $allSheets = $xpath->query('//wb:sheet');
-
-        // If XPath fails, try direct element access
-        if ($allSheets->length === 0) {
-            $sheets = $workbookDom->getElementsByTagNameNS('http://schemas.openxmlformats.org/spreadsheetml/2006/main', 'sheet');
-            $allSheets = $sheets;
-        }
-
-        // Try to find sheet by name
-        foreach ($allSheets as $sheet) {
-            $name = $sheet->getAttribute('name');
-
-            if (trim($name) === trim(self::EXPECTED_SHEET)) {
-                // Get relationship ID - try both methods
-                $sheetId = $sheet->getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id');
-
-                if (!$sheetId) {
-                    // Some Excel files use attributes without namespace
-                    foreach ($sheet->attributes as $attr) {
-                        if ($attr->localName === 'id' || $attr->name === 'r:id') {
-                            $sheetId = $attr->value;
-                            break;
-                        }
-                    }
-                }
-
-                if ($sheetId) {
-                    // Parse relationships
-                    $relsDom = new \DOMDocument();
-                    $relsDom->loadXML($relsXml);
-                    $relsXpath = new \DOMXPath($relsDom);
-                    $relsXpath->registerNamespace('rel', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
-
-                    $rels = $relsXpath->query("//rel:Relationship[@Id='{$sheetId}']");
-                    if ($rels->length > 0) {
-                        return $rels->item(0)->getAttribute('Target');
-                    }
+            foreach ($sheets as $sheet) {
+                if ($sheet->getAttribute('name') === self::EXPECTED_SHEET) {
+                    $targetSheetId = $sheet->getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id');
+                    break;
                 }
             }
-        }
 
-        return null;
+            if (!$targetSheetId) {
+                throw new \Exception("Sheet '" . self::EXPECTED_SHEET . "' not found");
+            }
+
+            // Read relationships to find sheet file
+            $relsXml = $zip->getFromName('xl/_rels/workbook.xml.rels');
+            if (!$relsXml) {
+                throw new \Exception("workbook.xml.rels not found");
+            }
+
+            $relsDom = new \DOMDocument();
+            $relsDom->loadXML($relsXml);
+            $relsXpath = new \DOMXPath($relsDom);
+            $relsXpath->registerNamespace('r', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
+
+            $rels = $relsXpath->query("//r:Relationship[@Id='{$targetSheetId}']");
+            if ($rels->length === 0) {
+                throw new \Exception("Sheet relationship not found");
+            }
+
+            $sheetFile = $rels->item(0)->getAttribute('Target');
+            $sheetXml = $zip->getFromName("xl/worksheets/{$sheetFile}");
+            if (!$sheetXml) {
+                throw new \Exception("Sheet XML not found: {$sheetFile}");
+            }
+
+            return $this->parseSheetData($sheetXml);
+
+        } finally {
+            $zip->close();
+        }
     }
 
-    /**
-     * Parse sheet XML and extract data
-     */
-    private function parseSheetXml(string $sheetXml): array
+    private function parseSheetData(string $sheetXml): array
     {
         $dom = new \DOMDocument();
         $dom->loadXML($sheetXml);
-
         $xpath = new \DOMXPath($dom);
         $xpath->registerNamespace('ws', 'http://schemas.openxmlformats.org/spreadsheetml/2006/main');
 
-        // Get all rows
         $rows = $xpath->query('//ws:row');
-
         $data = [];
         $errors = [];
 
-        // Parse rows 3-13 (DRE lines)
         foreach ($rows as $row) {
             $rowNum = (int)$row->getAttribute('r');
-
             if ($rowNum < self::START_ROW || $rowNum > self::END_ROW) {
                 continue;
             }
 
-            $linhaId = $rowNum - 2; // DRE line ID (1-11)
+            $linhaId = $rowNum - 2;
+            $cells = $xpath->query('.//ws:c', $row);
+            $cellValues = [];
 
-            try {
-                // Get cells in this row
-                $cells = $xpath->query('.//ws:c', $row);
-                $cellValues = [];
-
-                foreach ($cells as $cell) {
-                    $ref = $cell->getAttribute('r');
-                    $value = $this->getCellValue($cell, $dom, $xpath);
-                    $cellValues[$ref] = $value;
+            foreach ($cells as $cell) {
+                $ref = $cell->getAttribute('r');
+                $values = $xpath->query('.//ws:v', $cell);
+                if ($values->length > 0) {
+                    $cellValues[$ref] = floatval($values->item(0)->nodeValue);
                 }
+            }
 
-                // Extract monthly data
-                for ($mesNum = 1; $mesNum <= 12; $mesNum++) {
-                    $colStart = 2 + (($mesNum - 1) * 5);
+            // Extract 12 months
+            for ($mes = 1; $mes <= 12; $mes++) {
+                $colStart = 2 + (($mes - 1) * 5);
 
-                    $record = [
-                        'linha_id' => $linhaId,
-                        'mes' => $mesNum,
-                        'valor_planejado' => $this->getCellValueByCol($cellValues, $colStart, $rowNum),
-                        'valor_realizado' => $this->getCellValueByCol($cellValues, $colStart + 1, $rowNum),
-                        'analise_vertical_planejado' => $this->getCellValueByCol($cellValues, $colStart + 2, $rowNum),
-                        'analise_vertical_realizado' => $this->getCellValueByCol($cellValues, $colStart + 3, $rowNum),
-                        'variacao_planejado_realizado' => $this->getCellValueByCol($cellValues, $colStart + 4, $rowNum),
-                    ];
-
-                    if ($mesNum > 1) {
-                        $record['analise_horizontal_planejado'] = $this->getCellValueByCol($cellValues, $colStart + 5, $rowNum);
-                        $record['analise_horizontal_realizado'] = $this->getCellValueByCol($cellValues, $colStart + 6, $rowNum);
-                    }
-
-                    $data[] = $record;
-                }
-            } catch (\Exception $e) {
-                $errors[] = "Error parsing row {$rowNum}: " . $e->getMessage();
+                $data[] = [
+                    'linha_id' => $linhaId,
+                    'mes' => $mes,
+                    'valor_planejado' => $this->getCellValue($cellValues, $colStart, $rowNum),
+                    'valor_realizado' => $this->getCellValue($cellValues, $colStart + 1, $rowNum),
+                    'analise_vertical_planejado' => $this->getCellValue($cellValues, $colStart + 2, $rowNum),
+                    'analise_vertical_realizado' => $this->getCellValue($cellValues, $colStart + 3, $rowNum),
+                    'variacao_planejado_realizado' => $this->getCellValue($cellValues, $colStart + 4, $rowNum),
+                ];
             }
         }
 
-        return [
-            'data' => $data,
-            'linhas_count' => count($data),
-            'errors' => $errors
-        ];
+        return ['data' => $data, 'linhas_count' => count($data), 'errors' => $errors];
     }
 
-    /**
-     * Get cell value from XML element
-     */
-    private function getCellValue(\DOMElement $cell, \DOMDocument $dom, \DOMXPath $xpath): ?float
+    private function getCellValue(array $cellValues, int $col, int $row): ?float
     {
-        $t = $cell->getAttribute('t');
-
-        // Get value element
-        $values = $xpath->query('.//ws:v', $cell);
-        if ($values->length === 0) {
-            return null;
-        }
-
-        $value = $values->item(0)->nodeValue;
-
-        // If it's a shared string, skip
-        if ($t === 's') {
-            return null;
-        }
-
-        // Convert to float
-        if (is_numeric($value)) {
-            return floatval($value);
-        }
-
-        return null;
-    }
-
-    /**
-     * Get cell value from cell array by column and row
-     */
-    private function getCellValueByCol(array $cellValues, int $col, int $row): ?float
-    {
-        $colLetter = $this->columnNumberToLetter($col);
+        $colLetter = $this->numToCol($col);
         $cellRef = $colLetter . $row;
-
         return $cellValues[$cellRef] ?? null;
     }
 
-    /**
-     * Convert column number to Excel letter
-     */
-    private function columnNumberToLetter(int $col): string
+    private function numToCol(int $num): string
     {
         $letter = '';
-        while ($col > 0) {
-            $col--;
-            $letter = chr(65 + ($col % 26)) . $letter;
-            $col = intdiv($col, 26);
+        while ($num > 0) {
+            $num--;
+            $letter = chr(65 + ($num % 26)) . $letter;
+            $num = intdiv($num, 26);
         }
         return $letter;
     }
