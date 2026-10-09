@@ -166,6 +166,21 @@
                                 <div class="chart-container">
                                     <canvas id="lineChart"></canvas>
                                 </div>
+                                <!-- Value Cards -->
+                                <div class="row mt-3 g-2">
+                                    <div class="col-6">
+                                        <div style="background: white; border-radius: 10px; padding: 15px; text-align: center; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                            <div style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 8px;">PLANEJADO</div>
+                                            <div id="planejadoValue" style="font-size: 1.3rem; font-weight: 700; color: #10b981;">R$ 0,00</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div style="background: white; border-radius: 10px; padding: 15px; text-align: center; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                            <div style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 8px;">REALIZADO</div>
+                                            <div id="realizadoValue" style="font-size: 1.3rem; font-weight: 700; color: #ef4444;">R$ 0,00</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Bar Chart -->
@@ -348,12 +363,12 @@
                         {
                             label: 'Planejado',
                             data: planejado,
-                            borderColor: '#60a5fa',
-                            backgroundColor: 'rgba(96, 165, 250, 0.15)',
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.15)',
                             tension: 0.4,
                             fill: true,
                             pointRadius: 5,
-                            pointBackgroundColor: '#60a5fa',
+                            pointBackgroundColor: '#10b981',
                             pointBorderColor: '#ffffff',
                             pointBorderWidth: 2,
                             pointHoverRadius: 7,
@@ -362,12 +377,12 @@
                         {
                             label: 'Realizado',
                             data: realizado,
-                            borderColor: '#0ea5e9',
-                            backgroundColor: 'rgba(14, 165, 233, 0.15)',
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.15)',
                             tension: 0.4,
                             fill: true,
                             pointRadius: 5,
-                            pointBackgroundColor: '#0ea5e9',
+                            pointBackgroundColor: '#ef4444',
                             pointBorderColor: '#ffffff',
                             pointBorderWidth: 2,
                             pointHoverRadius: 7,
@@ -407,6 +422,19 @@
                     scales: { y: { beginAtZero: true } }
                 }
             });
+
+            // Update value cards with last month data (December - mes 12)
+            const lastMonthData = receita.meses.find(m => m.mes === 12);
+            if (lastMonthData) {
+                const planejadoVal = lastMonthData.valor_planejado;
+                const realizadoVal = lastMonthData.valor_realizado;
+
+                document.getElementById('planejadoValue').textContent = formatBR(planejadoVal);
+                document.getElementById('planejadoValue').style.color = planejadoVal >= 0 ? '#10b981' : '#ef4444';
+
+                document.getElementById('realizadoValue').textContent = formatBR(realizadoVal);
+                document.getElementById('realizadoValue').style.color = realizadoVal >= 0 ? '#10b981' : '#ef4444';
+            }
             } catch (err) {
                 console.error('Error rendering area charts:', err);
             }
