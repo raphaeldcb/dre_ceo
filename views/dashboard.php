@@ -133,24 +133,32 @@
 
                             <!-- Monthly Breakdown Table -->
                             <div class="col-12">
-                                <h6 class="mb-3">Dados Detalhados - Por Mês</h6>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0">Dados Detalhados - Por Mês</h6>
+                                    <select id="monthSelector" class="form-select form-select-sm w-auto">
+                                        <option value="1">Janeiro</option>
+                                        <option value="2">Fevereiro</option>
+                                        <option value="3">Março</option>
+                                        <option value="4">Abril</option>
+                                        <option value="5">Maio</option>
+                                        <option value="6">Junho</option>
+                                        <option value="7">Julho</option>
+                                        <option value="8">Agosto</option>
+                                        <option value="9">Setembro</option>
+                                        <option value="10">Outubro</option>
+                                        <option value="11">Novembro</option>
+                                        <option value="12">Dezembro</option>
+                                    </select>
+                                </div>
                                 <div class="table-responsive">
                                     <table class="table table-hover table-sm">
                                         <thead class="table-light">
                                             <tr>
                                                 <th>Linha</th>
-                                                <th class="text-center">Jan</th>
-                                                <th class="text-center">Fev</th>
-                                                <th class="text-center">Mar</th>
-                                                <th class="text-center">Abr</th>
-                                                <th class="text-center">Mai</th>
-                                                <th class="text-center">Jun</th>
-                                                <th class="text-center">Jul</th>
-                                                <th class="text-center">Ago</th>
-                                                <th class="text-center">Set</th>
-                                                <th class="text-center">Out</th>
-                                                <th class="text-center">Nov</th>
-                                                <th class="text-center">Dez</th>
+                                                <th class="text-end">Planejado</th>
+                                                <th class="text-end">Realizado</th>
+                                                <th class="text-end">Variação</th>
+                                                <th class="text-end">%</th>
                                             </tr>
                                         </thead>
                                         <tbody id="monthlyDataTable">
@@ -372,7 +380,7 @@
             }
         }
 
-        function renderMonthlyDataTable() {
+        function renderMonthlyDataTable(mesSelected = 1) {
             try {
                 const tbody = document.getElementById('monthlyDataTable');
                 if (!tbody) {
@@ -386,17 +394,26 @@
                     return;
                 }
 
+                const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
                 areaData.linhas.forEach(linha => {
+                    const mes_data = linha.meses.find(m => m.mes === mesSelected);
+
+                    if (!mes_data) return;
+
+                    const planejado = mes_data.valor_planejado;
+                    const realizado = mes_data.valor_realizado;
+                    const variacao = realizado - planejado;
+                    const percentual = planejado !== 0 ? (realizado / planejado * 100) : 0;
+
                     const row = document.createElement('tr');
-                    let html = `<td>${htmlEscape(linha.nome)}</td>`;
-
-                    for (let mes = 1; mes <= 12; mes++) {
-                        const mes_data = linha.meses.find(m => m.mes === mes);
-                        const valor = mes_data ? mes_data.valor_realizado : 0;
-                        html += `<td class="text-end text-nowrap">${formatBR(valor)}</td>`;
-                    }
-
-                    row.innerHTML = html;
+                    row.innerHTML = `
+                        <td>${htmlEscape(linha.nome)}</td>
+                        <td class="text-end">${formatBR(planejado)}</td>
+                        <td class="text-end">${formatBR(realizado)}</td>
+                        <td class="text-end ${variacao >= 0 ? 'positive' : 'negative'}">${formatBR(variacao)}</td>
+                        <td class="text-end ${percentual >= 100 ? 'positive' : 'negative'}">${formatNumberBR(percentual)}%</td>
+                    `;
                     tbody.appendChild(row);
                 });
             } catch (err) {
@@ -505,6 +522,15 @@
             const newAno = e.target.value;
             window.location.search = `area_id=${areaId}&ano=${newAno}`;
         });
+
+        // Month selector
+        const monthSelector = document.getElementById('monthSelector');
+        if (monthSelector) {
+            monthSelector.addEventListener('change', (e) => {
+                const selectedMonth = parseInt(e.target.value);
+                renderMonthlyDataTable(selectedMonth);
+            });
+        }
 
         // Load on page load
         document.addEventListener('DOMContentLoaded', init);
