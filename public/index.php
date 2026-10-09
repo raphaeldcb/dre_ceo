@@ -13,7 +13,34 @@ if (!file_exists(__DIR__ . '/../.env')) {
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Initialize the application
-// TODO: Add application bootstrap logic here
-echo 'DRE CEO Dashboard - Ready for implementation';
+// Start session
+session_start();
+
+// Initialize CSRF token if not present
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Initialize router and define routes
+$router = new \App\Utils\Router();
+
+// Upload routes
+$router->get('/upload', function() {
+    $controller = new \App\Controllers\UploadController();
+    $controller->showForm();
+});
+
+$router->post('/api/upload', function() {
+    $controller = new \App\Controllers\UploadController();
+    $controller->handle();
+});
+
+// Default route
+$router->get('/', function() {
+    echo '<h1>DRE CEO Dashboard</h1>';
+    echo '<p><a href="/upload">Upload DRE</a></p>';
+});
+
+// Dispatch the request
+$router->dispatch();
 ?>
