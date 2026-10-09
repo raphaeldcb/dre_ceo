@@ -75,7 +75,10 @@
                 <ul class="nav nav-tabs card-header-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="area-tab" data-bs-toggle="tab" data-bs-target="#areaContent" type="button" role="tab">
-                            📊 Área <?= $areaId ?>
+                            📊 <?php
+                                $areaNames = [1 => 'Compras BR', 2 => 'Siga', 3 => 'Eficaz', 4 => 'Outsourcing'];
+                                echo $areaNames[$areaId] ?? "Área {$areaId}";
+                            ?>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -189,6 +192,18 @@
         const baseUrl = window.location.origin;
         const areaId = <?= $areaId ?>;
         const ano = <?= $ano ?>;
+
+        // Area names mapping
+        const areaNames = {
+            1: 'Compras BR',
+            2: 'Siga',
+            3: 'Eficaz',
+            4: 'Outsourcing'
+        };
+
+        function getAreaName(id) {
+            return areaNames[id] || `Área ${id}`;
+        }
 
         // Area data
         let areaData = {};

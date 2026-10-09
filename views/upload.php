@@ -32,41 +32,17 @@
                                 <label for="area_id" class="form-label">Área <span class="text-danger">*</span></label>
                                 <select id="area_id" name="area_id" class="form-select" required>
                                     <option value="">Selecione uma área...</option>
-                                    <option value="1">Administração</option>
-                                    <option value="2">Vendas</option>
-                                    <option value="3">Marketing</option>
-                                    <option value="4">Recursos Humanos</option>
-                                    <option value="5">Operações</option>
-                                    <option value="6">Financeiro</option>
-                                    <option value="7">Tecnologia</option>
-                                    <option value="8">Qualidade</option>
+                                    <option value="1">Compras BR</option>
+                                    <option value="2">Siga</option>
+                                    <option value="3">Eficaz</option>
+                                    <option value="4">Outsourcing</option>
                                 </select>
                             </div>
 
-                            <!-- Year and Month -->
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="ano" class="form-label">Ano <span class="text-danger">*</span></label>
-                                    <input type="number" id="ano" name="ano" class="form-control" value="<?= date('Y') ?>" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="mes" class="form-label">Mês <span class="text-danger">*</span></label>
-                                    <select id="mes" name="mes" class="form-select" required>
-                                        <option value="">Selecione...</option>
-                                        <option value="1" <?= date('n') == 1 ? 'selected' : '' ?>>Janeiro</option>
-                                        <option value="2" <?= date('n') == 2 ? 'selected' : '' ?>>Fevereiro</option>
-                                        <option value="3" <?= date('n') == 3 ? 'selected' : '' ?>>Março</option>
-                                        <option value="4" <?= date('n') == 4 ? 'selected' : '' ?>>Abril</option>
-                                        <option value="5" <?= date('n') == 5 ? 'selected' : '' ?>>Maio</option>
-                                        <option value="6" <?= date('n') == 6 ? 'selected' : '' ?>>Junho</option>
-                                        <option value="7" <?= date('n') == 7 ? 'selected' : '' ?>>Julho</option>
-                                        <option value="8" <?= date('n') == 8 ? 'selected' : '' ?>>Agosto</option>
-                                        <option value="9" <?= date('n') == 9 ? 'selected' : '' ?>>Setembro</option>
-                                        <option value="10" <?= date('n') == 10 ? 'selected' : '' ?>>Outubro</option>
-                                        <option value="11" <?= date('n') == 11 ? 'selected' : '' ?>>Novembro</option>
-                                        <option value="12" <?= date('n') == 12 ? 'selected' : '' ?>>Dezembro</option>
-                                    </select>
-                                </div>
+                            <!-- Year -->
+                            <div class="mb-3">
+                                <label for="ano" class="form-label">Ano <span class="text-danger">*</span></label>
+                                <input type="number" id="ano" name="ano" class="form-control" value="<?= date('Y') ?>" required>
                             </div>
 
                             <!-- File Upload Zone -->

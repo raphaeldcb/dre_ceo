@@ -62,7 +62,6 @@ class UploadController
         $file = $_FILES['file'];
         $areaId = (int)$_POST['area_id'];
         $ano = (int)($_POST['ano'] ?? date('Y'));
-        $mes = (int)($_POST['mes'] ?? date('n'));
 
         try {
             // Validate file
@@ -87,11 +86,11 @@ class UploadController
                 $pdo->beginTransaction();
 
                 try {
-                    // Delete old records for this area/year/month combination
+                    // Delete old records for this area/year combination
                     $deleteStmt = $pdo->prepare(
-                        'DELETE FROM dre_valores WHERE area_id = ? AND ano = ? AND mes = ?'
+                        'DELETE FROM dre_valores WHERE area_id = ? AND ano = ?'
                     );
-                    $deleteStmt->execute([$areaId, $ano, $mes]);
+                    $deleteStmt->execute([$areaId, $ano]);
 
                     // Insert new records with duplicate handling
                     $insertStmt = $pdo->prepare(
@@ -121,15 +120,14 @@ class UploadController
                     $userId = $_SESSION['user_id'] ?? 1; // Default to admin if session not set
 
                     $historyStmt = $pdo->prepare(
-                        'INSERT INTO uploads (area_id, user_id, arquivo_nome, arquivo_hash, mes, ano, linhas_importadas, status, processado_em)
-                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())'
+                        'INSERT INTO uploads (area_id, user_id, arquivo_nome, arquivo_hash, ano, linhas_importadas, status, processado_em)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())'
                     );
                     $historyStmt->execute([
                         $areaId,
                         $userId,
                         $file['name'],
                         $hashFile,
-                        $mes,
                         $ano,
                         $inserted,
                         'SUCESSO'
