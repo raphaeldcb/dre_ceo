@@ -7,24 +7,90 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        body { background: #f8f9fa; }
-        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #0f3460 0%, #1a5f7a 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .navbar-brand { color: #f0f0f0 !important; }
+        .navbar-text { color: #d0d0d0 !important; }
         .chart-container { position: relative; height: 400px; margin-bottom: 30px; }
-        .card { border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .card {
+            border: 1px solid rgba(255,255,255,0.1);
+            background: #0f3460;
+            color: #e0e0e0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #0f3460 0%, #1a5f7a 100%);
+            color: #e0f0ff;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
         .table-responsive { border-radius: 8px; overflow: hidden; }
-        .metric-card { text-align: center; padding: 20px; background: white; border-radius: 8px; margin-bottom: 15px; }
-        .metric-value { font-size: 1.8rem; font-weight: bold; color: #667eea; }
-        .metric-label { font-size: 0.85rem; color: #666; text-transform: uppercase; }
-        .positive { color: #28a745; }
-        .negative { color: #dc3545; }
+        .metric-card {
+            text-align: center;
+            padding: 20px;
+            background: #1a4a6a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #e0f0ff;
+        }
+        .metric-label {
+            font-size: 0.85rem;
+            color: #b0d0e0;
+            text-transform: uppercase;
+        }
+        .positive { color: #4ade80; }
+        .negative { color: #f87171; }
         .tab-content { padding: 20px 0; }
+        .form-select {
+            background: #1a4a6a;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #f0f0f0;
+        }
+        .form-select:focus {
+            background: #1a4a6a;
+            border-color: #1a5f7a;
+            color: #f0f0f0;
+            box-shadow: 0 0 0 0.25rem rgba(26, 95, 122, 0.25);
+        }
+        .table { color: #e0e0e0; }
+        .table thead { background: #1a4a6a; border-bottom: 2px solid rgba(255,255,255,0.1); }
+        .table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .nav-tabs .nav-link {
+            color: #b0d0e0;
+            border-color: transparent;
+        }
+        .nav-tabs .nav-link.active {
+            background: #1a4a6a;
+            color: #e0f0ff;
+            border-bottom: 3px solid #1a5f7a;
+        }
+        .btn-back {
+            color: #e0f0ff;
+            text-decoration: none;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        .btn-back:hover { color: #f0f0f0; }
     </style>
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
+            <a class="btn-back" href="/home" title="Voltar">← Voltar</a>
             <a class="navbar-brand" href="/">📊 DRE CEO Dashboard</a>
             <div class="navbar-text text-white d-flex gap-3">
                 <div>

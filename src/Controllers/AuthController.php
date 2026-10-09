@@ -90,6 +90,81 @@ class AuthController
     }
 
     /**
+     * Show register form
+     */
+    public function showRegister(): void
+    {
+        // Redirect to home if already logged in
+        if (!empty($_SESSION['user_id'])) {
+            header('Location: /home');
+            exit;
+        }
+
+        include __DIR__ . '/../../views/register.php';
+    }
+
+    /**
+     * Handle registration API request
+     */
+    public function register(): void
+    {
+        header('Content-Type: application/json');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'error' => 'Method not allowed']);
+            return;
+        }
+
+        try {
+            $input = json_decode(file_get_contents('php://input'), true);
+
+            if (empty($input['username']) || empty($input['password']) || empty($input['name'])) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Todos os campos são obrigatórios']);
+                return;
+            }
+
+            $username = trim($input['username']);
+            $password = trim($input['password']);
+            $name = trim($input['name']);
+
+            // Validation
+            if (strlen($username) < 3) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Usuário deve ter no mínimo 3 caracteres']);
+                return;
+            }
+
+            if (strlen($password) < 6) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Senha deve ter no mínimo 6 caracteres']);
+                return;
+            }
+
+            // Check if user already exists (in simple array)
+            if (isset(self::USERS[$username])) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Usuário já existe']);
+                return;
+            }
+
+            // Note: In production, save to database with proper hashing
+            // For now, just confirm registration would work
+            http_response_code(201);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Cadastro realizado com sucesso!',
+                'user' => $username
+            ]);
+
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
+
+    /**
      * Handle logout
      */
     public function logout(): void

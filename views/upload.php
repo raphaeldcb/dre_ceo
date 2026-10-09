@@ -6,22 +6,100 @@
     <title>Upload DRE - CEO Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-        .card { border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
-        .upload-zone { border: 2px dashed #667eea; border-radius: 8px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .upload-zone:hover { border-color: #764ba2; background-color: rgba(102, 126, 234, 0.05); }
-        .upload-zone.dragover { border-color: #764ba2; background-color: rgba(102, 126, 234, 0.1); }
-        .btn-primary { background-color: #667eea; border-color: #667eea; }
-        .btn-primary:hover { background-color: #764ba2; border-color: #764ba2; }
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            background: #0f3460;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #0f3460 0%, #1a5f7a 100%);
+            color: #e0f0ff;
+        }
+        .card-body {
+            color: #e0e0e0;
+        }
+        .form-label {
+            color: #e0f0ff;
+        }
+        .form-control {
+            background: #1a4a6a;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #f0f0f0;
+        }
+        .form-control::placeholder {
+            color: #80a0b0;
+        }
+        .form-control:focus {
+            background: #1a4a6a;
+            border-color: #1a5f7a;
+            color: #f0f0f0;
+            box-shadow: 0 0 0 0.2rem rgba(26, 95, 122, 0.25);
+        }
+        .form-select {
+            background: #1a4a6a;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #f0f0f0;
+        }
+        .form-select:focus {
+            background: #1a4a6a;
+            border-color: #1a5f7a;
+            color: #f0f0f0;
+            box-shadow: 0 0 0 0.2rem rgba(26, 95, 122, 0.25);
+        }
+        .upload-zone {
+            border: 2px dashed #1a5f7a;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(26, 95, 122, 0.1);
+            color: #e0f0ff;
+        }
+        .upload-zone:hover {
+            border-color: #1a5f7a;
+            background-color: rgba(26, 95, 122, 0.2);
+        }
+        .upload-zone.dragover {
+            border-color: #1a5f7a;
+            background-color: rgba(26, 95, 122, 0.3);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #0f3460 0%, #1a5f7a 100%);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #f0f0f0;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1a5f7a 0%, #244a68 100%);
+            border-color: rgba(255,255,255,0.3);
+        }
+        .text-muted {
+            color: #b0d0e0 !important;
+        }
+        .text-danger {
+            color: #f87171 !important;
+        }
+        hr {
+            border-color: rgba(255,255,255,0.1);
+        }
     </style>
 </head>
 <body class="d-flex align-items-center justify-content-center py-4">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-6">
+                <div style="margin-bottom: 20px;">
+                    <a href="/home" style="color: #e0f0ff; text-decoration: none; font-size: 1.1rem;">← Voltar para Início</a>
+                </div>
                 <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">📊 Upload DRE</h4>
+                    <div class="card-header text-white">
+                        <h4 class="mb-0">📤 Upload DRE</h4>
                     </div>
                     <div class="card-body p-5">
                         <form id="uploadForm" enctype="multipart/form-data" method="POST">

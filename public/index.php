@@ -43,6 +43,16 @@ $router->post('/api/login', function() {
     $controller->login();
 });
 
+$router->get('/register', function() {
+    $controller = new \App\Controllers\AuthController();
+    $controller->showRegister();
+});
+
+$router->post('/api/register', function() {
+    $controller = new \App\Controllers\AuthController();
+    $controller->register();
+});
+
 $router->get('/home', function() {
     $controller = new \App\Controllers\AuthController();
     $controller->showHome();
