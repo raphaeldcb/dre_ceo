@@ -121,9 +121,9 @@ class ExcelParser
                 }
             }
 
-            // Extract 12 months (each month has 6 columns)
+            // Extract 12 months
             for ($mes = 1; $mes <= 12; $mes++) {
-                $colStart = 2 + (($mes - 1) * 6);
+                $colStart = 2 + (($mes - 1) * 5);
 
                 $data[] = [
                     'linha_id' => $linhaId,
