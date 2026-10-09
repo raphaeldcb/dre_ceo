@@ -91,6 +91,7 @@ class UploadController
                         'DELETE FROM dre_valores WHERE area_id = ? AND ano = ?'
                     );
                     $deleteStmt->execute([$areaId, $ano]);
+                    $deletedRows = $deleteStmt->rowCount();
 
                     // Insert new records with duplicate handling
                     $insertStmt = $pdo->prepare(
@@ -139,7 +140,8 @@ class UploadController
                     echo json_encode([
                         'success' => true,
                         'linhas_count' => $inserted,
-                        'message' => "Successfully imported {$inserted} records"
+                        'deletedRows' => $deletedRows,
+                        'message' => "✅ Dados anteriores removidos ({$deletedRows} registros). {$inserted} novos registros importados com sucesso!"
                     ]);
 
                 } catch (\Exception $e) {

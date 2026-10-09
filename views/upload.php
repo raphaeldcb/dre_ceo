@@ -64,6 +64,12 @@
                             <!-- Status Messages -->
                             <div id="alertBox"></div>
 
+                            <!-- Warning Message -->
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                ⚠️ <strong>Atenção:</strong> Ao fazer upload, os dados existentes deste ano para esta área serão <strong>removidos</strong> e substituídos pelos dados do arquivo.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+
                             <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary btn-lg w-100">
                                 <span id="btnText">📤 Enviar Arquivo</span>
