@@ -30,7 +30,7 @@ class DreValor
     public static function getByAreaAndYear(int $areaId, int $ano): array
     {
         $db = Database::getInstance();
-        $stmt = $db->getConnection()->prepare(
+        $stmt = $db->prepare(
             'SELECT id, area_id, dre_linha_id, mes, ano, valor_planejado, valor_realizado,
                     variancia, percentual_realizacao, analises, status, criado_em, atualizado_em
              FROM dre_valores
@@ -73,7 +73,7 @@ class DreValor
 
         $sql .= ' ORDER BY mes ASC, area_id ASC';
 
-        $stmt = $db->getConnection()->prepare($sql);
+        $stmt = $db->prepare($sql);
         $stmt->execute($params);
 
         $results = [];
@@ -101,7 +101,7 @@ class DreValor
         $placeholders = implode(',', array_fill(0, count($areaIds), '?'));
         $params = array_merge($areaIds, [$ano]);
 
-        $stmt = $db->getConnection()->prepare(
+        $stmt = $db->prepare(
             "SELECT id, area_id, dre_linha_id, mes, ano, valor_planejado, valor_realizado,
                     variancia, percentual_realizacao, analises, status, criado_em, atualizado_em
              FROM dre_valores
@@ -127,7 +127,7 @@ class DreValor
     public static function getSummaryByAreaAndYear(int $areaId, int $ano): array
     {
         $db = Database::getInstance();
-        $stmt = $db->getConnection()->prepare(
+        $stmt = $db->prepare(
             'SELECT
                 COUNT(*) as total_records,
                 SUM(valor_planejado) as total_planejado,

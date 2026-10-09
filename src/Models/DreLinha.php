@@ -22,7 +22,7 @@ class DreLinha
     public static function getAll(): array
     {
         $db = Database::getInstance();
-        $stmt = $db->getConnection()->prepare(
+        $stmt = $db->prepare(
             'SELECT id, ordem, nome, descricao, ativa, criada_em, atualizada_em
              FROM dre_linhas
              ORDER BY ordem ASC'
@@ -45,7 +45,7 @@ class DreLinha
     public static function getById(int $id): ?self
     {
         $db = Database::getInstance();
-        $stmt = $db->getConnection()->prepare(
+        $stmt = $db->prepare(
             'SELECT id, ordem, nome, descricao, ativa, criada_em, atualizada_em
              FROM dre_linhas
              WHERE id = ?'
@@ -70,7 +70,7 @@ class DreLinha
         $db = Database::getInstance();
 
         $placeholders = implode(',', array_fill(0, count($priorityIds), '?'));
-        $stmt = $db->getConnection()->prepare(
+        $stmt = $db->prepare(
             "SELECT id, ordem, nome, descricao, ativa, criada_em, atualizada_em
              FROM dre_linhas
              WHERE id IN ({$placeholders})
