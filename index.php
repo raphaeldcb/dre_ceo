@@ -1,5 +1,5 @@
 <?php
-// Redirect to public/index.php
-header('Location: /dre_ceo/public/');
-exit;
+// Route all requests to public/index.php
+chdir('public');
+require 'index.php';
 ?>
