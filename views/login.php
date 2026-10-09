@@ -13,13 +13,14 @@
             box-sizing: border-box;
         }
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #0a1929 50%, #132849 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             overflow: hidden;
+            color: #e0e0e0;
         }
         body::before {
             content: '';
@@ -28,25 +29,25 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 20% 50%, rgba(51, 102, 153, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(26, 95, 122, 0.1) 0%, transparent 50%);
+            background: radial-gradient(circle at 20% 50%, rgba(26, 95, 122, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(15, 52, 96, 0.1) 0%, transparent 50%);
             pointer-events: none;
             z-index: 0;
         }
         .login-container {
-            background: linear-gradient(135deg, #1a4a6a 0%, #0f3460 100%);
+            background: #0f3460;
             border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3),
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4),
                         inset 0 1px 0 rgba(255, 255, 255, 0.1);
             overflow: hidden;
             max-width: 420px;
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
             z-index: 1;
         }
         .login-header {
-            background: linear-gradient(135deg, #1a5f7a 0%, #0f3460 100%);
+            background: linear-gradient(135deg, #0f3460 0%, #1a5f7a 100%);
             color: #f0f0f0;
             padding: 50px 30px 40px;
             text-align: center;
@@ -55,21 +56,19 @@
         .login-header i {
             font-size: 3rem;
             margin-bottom: 15px;
-            background: linear-gradient(135deg, #4ade80 0%, #60a5fa 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #60a5fa;
         }
         .login-header h1 {
             margin: 0;
             font-size: 1.8rem;
             font-weight: 700;
             letter-spacing: -0.5px;
+            color: #e0f0ff;
         }
         .login-header p {
             margin: 8px 0 0 0;
-            opacity: 0.75;
-            color: #a0c0d0;
+            opacity: 0.8;
+            color: #b0d0e0;
             font-size: 0.95rem;
         }
         .login-body {
@@ -87,8 +86,8 @@
             letter-spacing: 0.3px;
         }
         .form-control {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            background: #1a4a6a;
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
             color: #f0f0f0;
             padding: 12px 16px;
             border-radius: 10px;
@@ -96,33 +95,34 @@
             transition: all 0.3s ease;
         }
         .form-control::placeholder {
-            color: #708090;
+            color: #80a0b0;
         }
         .form-control:focus {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: #4ade80;
-            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+            background: #1a4a6a;
+            border-color: #1a5f7a;
+            box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.2);
             color: #f0f0f0;
             outline: none;
         }
         .btn-login {
-            background: linear-gradient(135deg, #4ade80 0%, #22d3ee 100%);
-            border: none;
+            background: linear-gradient(135deg, #1a5f7a 0%, #244a68 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 14px 24px;
             font-weight: 600;
             margin-top: 30px;
-            color: #0f172a;
+            color: #f0f0f0;
             border-radius: 10px;
             font-size: 1rem;
             letter-spacing: 0.5px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+            box-shadow: 0 4px 15px rgba(26, 95, 122, 0.2);
         }
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
-            background: linear-gradient(135deg, #22d3ee 0%, #4ade80 100%);
-            color: #0f172a;
+            box-shadow: 0 6px 20px rgba(26, 95, 122, 0.3);
+            background: linear-gradient(135deg, #244a68 0%, #2a5a80 100%);
+            color: #f0f0f0;
+            border-color: rgba(255, 255, 255, 0.3);
         }
         .btn-login:disabled {
             opacity: 0.7;
@@ -136,14 +136,14 @@
             font-size: 0.9rem;
         }
         .alert-danger {
-            background: rgba(248, 113, 113, 0.1);
-            border-color: rgba(248, 113, 113, 0.3);
-            color: #fca5a5;
+            background: rgba(244, 63, 94, 0.1);
+            border-color: rgba(244, 63, 94, 0.2);
+            color: #f87171;
         }
         .alert-success {
-            background: rgba(74, 222, 128, 0.1);
-            border-color: rgba(74, 222, 128, 0.3);
-            color: #86efac;
+            background: rgba(96, 165, 250, 0.1);
+            border-color: rgba(96, 165, 250, 0.2);
+            color: #93c5fd;
         }
         .error-message {
             display: none;
@@ -205,11 +205,8 @@
 
             <hr>
             <div style="text-align: center;">
-                <small class="text-muted" style="display: block; margin-bottom: 15px;">
-                    <strong>Demo:</strong> <code>admin</code> / <code>123456</code>
-                </small>
                 <p class="text-muted" style="margin: 0;">
-                    Não tem conta? <a href="/register" class="register-link">Cadastre-se</a>
+                    Não tem conta? <a href="/register" class="register-link">Cadastre-se aqui</a>
                 </p>
             </div>
         </div>
