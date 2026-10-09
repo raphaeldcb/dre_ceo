@@ -21,8 +21,13 @@ class DashboardController
         // Get current year from query or use current year
         $ano = isset($_GET['ano']) ? (int)$_GET['ano'] : date('Y');
 
-        // Get area ID from session or use first area
-        $areaId = $_SESSION['user_area_id'] ?? 1;
+        // Get area ID from query, session, or use first area
+        $areaId = isset($_GET['area_id']) ? (int)$_GET['area_id'] : ($_SESSION['user_area_id'] ?? 1);
+
+        // Validate area ID (1-8)
+        if ($areaId < 1 || $areaId > 8) {
+            $areaId = 1;
+        }
 
         // Get data for rendering
         $areaData = $this->service->getAreaData($areaId, $ano);
