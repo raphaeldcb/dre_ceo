@@ -83,7 +83,7 @@ class UploadController
                 }
 
                 // Insert data in transaction
-                $pdo = $this->db->getConnection();
+                $pdo = $this->db;
                 $pdo->beginTransaction();
 
                 try {
