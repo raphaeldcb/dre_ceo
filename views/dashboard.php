@@ -29,9 +29,10 @@
             <div class="navbar-text text-white d-flex gap-3">
                 <div>
                     Área: <select id="areaSelector" class="form-select form-select-sm d-inline-block w-auto ms-2">
-                        <?php for ($a = 1; $a <= 8; $a++): ?>
-                            <option value="<?= $a ?>" <?= ($areaId === $a) ? 'selected' : '' ?>>Área <?= $a ?></option>
-                        <?php endfor; ?>
+                        <option value="1" <?= ($areaId === 1) ? 'selected' : '' ?>>Compras BR</option>
+                        <option value="2" <?= ($areaId === 2) ? 'selected' : '' ?>>Siga</option>
+                        <option value="3" <?= ($areaId === 3) ? 'selected' : '' ?>>Eficaz</option>
+                        <option value="4" <?= ($areaId === 4) ? 'selected' : '' ?>>Outsourcing</option>
                     </select>
                 </div>
                 <div>
@@ -108,7 +109,7 @@
 
                             <!-- Data Table -->
                             <div class="col-12">
-                                <h6 class="mb-3">Dados Detalhados</h6>
+                                <h6 class="mb-3">Dados Detalhados - Consolidado</h6>
                                 <div class="table-responsive">
                                     <table class="table table-hover table-sm">
                                         <thead class="table-light">
@@ -121,6 +122,35 @@
                                             </tr>
                                         </thead>
                                         <tbody id="dataTable">
+                                            <!-- Populated by JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Monthly Breakdown Table -->
+                            <div class="col-12">
+                                <h6 class="mb-3">Dados Detalhados - Por Mês</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-sm">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Linha</th>
+                                                <th class="text-center">Jan</th>
+                                                <th class="text-center">Fev</th>
+                                                <th class="text-center">Mar</th>
+                                                <th class="text-center">Abr</th>
+                                                <th class="text-center">Mai</th>
+                                                <th class="text-center">Jun</th>
+                                                <th class="text-center">Jul</th>
+                                                <th class="text-center">Ago</th>
+                                                <th class="text-center">Set</th>
+                                                <th class="text-center">Out</th>
+                                                <th class="text-center">Nov</th>
+                                                <th class="text-center">Dez</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="monthlyDataTable">
                                             <!-- Populated by JS -->
                                         </tbody>
                                     </table>
@@ -177,6 +207,7 @@
                 // Render area charts
                 renderAreaCharts();
                 renderDataTable();
+                renderMonthlyDataTable();
 
                 // Load comparative data (RECEITA = linha_id 1)
                 const compResponse1 = await fetch(`/api/dashboard/comparative-data?linha_id=1&ano=${ano}`);
@@ -314,15 +345,47 @@
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${htmlEscape(linha.nome)}</td>
-                        <td class="text-end">R$ ${(totalPlanejado / 1000).toFixed(1)}k</td>
-                        <td class="text-end">R$ ${(totalRealizado / 1000).toFixed(1)}k</td>
-                        <td class="text-end ${variacao >= 0 ? 'positive' : 'negative'}">R$ ${(variacao / 1000).toFixed(1)}k</td>
-                        <td class="text-end ${percentual >= 100 ? 'positive' : 'negative'}">${percentual.toFixed(1)}%</td>
+                        <td class="text-end">${formatBR(totalPlanejado)}</td>
+                        <td class="text-end">${formatBR(totalRealizado)}</td>
+                        <td class="text-end ${variacao >= 0 ? 'positive' : 'negative'}">${formatBR(variacao)}</td>
+                        <td class="text-end ${percentual >= 100 ? 'positive' : 'negative'}">${formatNumberBR(percentual)}%</td>
                     `;
                     tbody.appendChild(row);
                 });
             } catch (err) {
                 console.error('Error rendering data table:', err);
+            }
+        }
+
+        function renderMonthlyDataTable() {
+            try {
+                const tbody = document.getElementById('monthlyDataTable');
+                if (!tbody) {
+                    console.warn('monthlyDataTable element not found');
+                    return;
+                }
+                tbody.innerHTML = '';
+
+                if (!areaData.linhas || areaData.linhas.length === 0) {
+                    console.warn('No linhas data available');
+                    return;
+                }
+
+                areaData.linhas.forEach(linha => {
+                    const row = document.createElement('tr');
+                    let html = `<td>${htmlEscape(linha.nome)}</td>`;
+
+                    for (let mes = 1; mes <= 12; mes++) {
+                        const mes_data = linha.meses.find(m => m.mes === mes);
+                        const valor = mes_data ? mes_data.valor_realizado : 0;
+                        html += `<td class="text-end text-nowrap">${formatBR(valor)}</td>`;
+                    }
+
+                    row.innerHTML = html;
+                    tbody.appendChild(row);
+                });
+            } catch (err) {
+                console.error('Error rendering monthly data table:', err);
             }
         }
 
@@ -342,7 +405,7 @@
 
         function renderComparativeChart(canvasId, data) {
             try {
-                const areas = ['Adm', 'Vendas', 'Marketing', 'RH', 'Ops', 'Financeiro', 'Tech', 'Qualidade'];
+                const areas = ['Compras BR', 'Siga', 'Eficaz', 'Outsourcing'];
                 const monthIndex = 12; // Last month data
 
                 if (!data.areas || data.areas.length === 0) {
@@ -392,6 +455,28 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // Format number to BR standard (1.234.567,89)
+        function formatBR(value) {
+            if (value === null || value === undefined) return 'R$ 0,00';
+            const num = parseFloat(value);
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(num);
+        }
+
+        // Format number without currency (1.234.567,89)
+        function formatNumberBR(value) {
+            if (value === null || value === undefined) return '0,00';
+            const num = parseFloat(value);
+            return new Intl.NumberFormat('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(num);
         }
 
         // Area selector

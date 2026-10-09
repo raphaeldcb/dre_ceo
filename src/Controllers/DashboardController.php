@@ -24,8 +24,8 @@ class DashboardController
         // Get area ID from query, session, or use first area
         $areaId = isset($_GET['area_id']) ? (int)$_GET['area_id'] : ($_SESSION['user_area_id'] ?? 1);
 
-        // Validate area ID (1-8)
-        if ($areaId < 1 || $areaId > 8) {
+        // Validate area ID (1-4)
+        if ($areaId < 1 || $areaId > 4) {
             $areaId = 1;
         }
 
@@ -61,10 +61,10 @@ class DashboardController
             $areaId = (int)$_GET['area_id'];
             $ano = (int)$_GET['ano'];
 
-            // Validate area exists (1-8)
-            if ($areaId < 1 || $areaId > 8) {
+            // Validate area exists (1-4)
+            if ($areaId < 1 || $areaId > 4) {
                 http_response_code(400);
-                echo json_encode(['error' => 'Invalid area_id. Must be between 1 and 8']);
+                echo json_encode(['error' => 'Invalid area_id. Must be between 1 and 4']);
                 return;
             }
 
