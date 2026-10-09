@@ -35,10 +35,37 @@ $router->post('/api/upload', function() {
     $controller->handle();
 });
 
+// Dashboard routes
+$router->get('/dashboard', function() {
+    $controller = new \App\Controllers\DashboardController();
+    $controller->index();
+});
+
+// Dashboard API routes
+$router->get('/api/dashboard/area-data', function() {
+    $controller = new \App\Controllers\DashboardController();
+    $controller->apiAreaData();
+});
+
+$router->get('/api/dashboard/comparative-data', function() {
+    $controller = new \App\Controllers\DashboardController();
+    $controller->apiComparativeData();
+});
+
+$router->get('/api/dashboard/overview-summary', function() {
+    $controller = new \App\Controllers\DashboardController();
+    $controller->apiOverviewSummary();
+});
+
+$router->get('/api/dashboard/export-year', function() {
+    $controller = new \App\Controllers\DashboardController();
+    $controller->apiExportYear();
+});
+
 // Default route
 $router->get('/', function() {
     echo '<h1>DRE CEO Dashboard</h1>';
-    echo '<p><a href="/upload">Upload DRE</a></p>';
+    echo '<p><a href="/upload">📤 Upload DRE</a> | <a href="/dashboard">📊 Dashboard</a></p>';
 });
 
 // Dispatch the request
