@@ -122,17 +122,21 @@ class ExcelParser
             }
 
             // Extract 12 months
+            // Janeiro: 5 colunas (B-F = cols 2-6)
+            // Outros: 7 colunas cada (G-M, N-T, etc)
             for ($mes = 1; $mes <= 12; $mes++) {
-                $colStart = 2 + (($mes - 1) * 5);
+                if ($mes === 1) {
+                    $colStart = 2; // B
+                } else {
+                    // Fevereiro em diante: 5 + (mes-2)*7 = -9 + mes*7
+                    $colStart = 7 + (($mes - 2) * 7); // G para fevereiro, N para março, etc
+                }
 
                 $data[] = [
                     'linha_id' => $linhaId,
                     'mes' => $mes,
                     'valor_planejado' => $this->getCellValue($cellValues, $colStart, $rowNum),
                     'valor_realizado' => $this->getCellValue($cellValues, $colStart + 1, $rowNum),
-                    'analise_vertical_planejado' => $this->getCellValue($cellValues, $colStart + 2, $rowNum),
-                    'analise_vertical_realizado' => $this->getCellValue($cellValues, $colStart + 3, $rowNum),
-                    'variacao_planejado_realizado' => $this->getCellValue($cellValues, $colStart + 4, $rowNum),
                 ];
             }
         }
