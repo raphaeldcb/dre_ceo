@@ -26,12 +26,21 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">📊 DRE CEO Dashboard</a>
-            <div class="navbar-text text-white">
-                Ano: <select id="anoSelector" class="form-select form-select-sm d-inline-block w-auto ms-2">
-                    <?php for ($y = 2024; $y <= 2026; $y++): ?>
-                        <option value="<?= $y ?>" <?= ($ano === $y) ? 'selected' : '' ?>><?= $y ?></option>
-                    <?php endfor; ?>
-                </select>
+            <div class="navbar-text text-white d-flex gap-3">
+                <div>
+                    Área: <select id="areaSelector" class="form-select form-select-sm d-inline-block w-auto ms-2">
+                        <?php for ($a = 1; $a <= 8; $a++): ?>
+                            <option value="<?= $a ?>" <?= ($areaId === $a) ? 'selected' : '' ?>>Área <?= $a ?></option>
+                        <?php endfor; ?>
+                    </select>
+                </div>
+                <div>
+                    Ano: <select id="anoSelector" class="form-select form-select-sm d-inline-block w-auto ms-2">
+                        <?php for ($y = 2024; $y <= 2026; $y++): ?>
+                            <option value="<?= $y ?>" <?= ($ano === $y) ? 'selected' : '' ?>><?= $y ?></option>
+                        <?php endfor; ?>
+                    </select>
+                </div>
             </div>
         </div>
     </nav>
@@ -385,10 +394,16 @@
             return div.innerHTML;
         }
 
+        // Area selector
+        document.getElementById('areaSelector').addEventListener('change', (e) => {
+            const newAreaId = e.target.value;
+            window.location.search = `area_id=${newAreaId}&ano=${ano}`;
+        });
+
         // Year selector
         document.getElementById('anoSelector').addEventListener('change', (e) => {
             const newAno = e.target.value;
-            window.location.search = `ano=${newAno}`;
+            window.location.search = `area_id=${areaId}&ano=${newAno}`;
         });
 
         // Load on page load
