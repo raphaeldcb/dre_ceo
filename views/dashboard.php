@@ -348,22 +348,30 @@
                         {
                             label: 'Planejado',
                             data: planejado,
-                            borderColor: '#6080a0',
-                            backgroundColor: 'rgba(96, 128, 160, 0.1)',
+                            borderColor: '#60a5fa',
+                            backgroundColor: 'rgba(96, 165, 250, 0.15)',
                             tension: 0.4,
                             fill: true,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
+                            pointRadius: 5,
+                            pointBackgroundColor: '#60a5fa',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 7,
+                            borderWidth: 3
                         },
                         {
                             label: 'Realizado',
                             data: realizado,
-                            borderColor: '#7090a8',
-                            backgroundColor: 'rgba(112, 144, 168, 0.1)',
+                            borderColor: '#0ea5e9',
+                            backgroundColor: 'rgba(14, 165, 233, 0.15)',
                             tension: 0.4,
                             fill: true,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
+                            pointRadius: 5,
+                            pointBackgroundColor: '#0ea5e9',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 7,
+                            borderWidth: 3
                         }
                     ]
                 },
@@ -385,8 +393,10 @@
                         {
                             label: 'Variação (R$ mil)',
                             data: variacao,
-                            backgroundColor: variacao.map(v => v >= 0 ? '#9090b0' : '#7070a0'),
-                            borderRadius: 4
+                            backgroundColor: variacao.map(v => v >= 0 ? '#10b981' : '#ef4444'),
+                            borderRadius: 4,
+                            borderWidth: 1,
+                            borderColor: variacao.map(v => v >= 0 ? '#059669' : '#dc2626')
                         }
                     ]
                 },
@@ -531,10 +541,10 @@
                         datasets: [{
                             label: `${data.linha_nome} (Realizado - R$ mil)`,
                             data: valores,
-                            backgroundColor: '#7090a8',
-                            borderColor: '#6080a0',
-                            borderWidth: 1,
-                            borderRadius: 4
+                            backgroundColor: '#3b82f6',
+                            borderColor: '#1e40af',
+                            borderWidth: 2,
+                            borderRadius: 6
                         }]
                     },
                     options: {
