@@ -68,29 +68,31 @@ class ExcelParser
     {
         $xpath = new \DOMXPath($workbookDom);
         $xpath->registerNamespace('wb', 'http://schemas.openxmlformats.org/spreadsheetml/2006/main');
+        $xpath->registerNamespace('r', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
 
-        // Find sheets
-        $sheets = $xpath->query('//wb:sheet[@name="' . self::EXPECTED_SHEET . '"]');
+        // Find all sheets
+        $allSheets = $xpath->query('//wb:sheet');
 
-        if ($sheets->length === 0) {
-            return null;
+        foreach ($allSheets as $sheet) {
+            $name = $sheet->getAttribute('name');
+            // Compare names (trim whitespace and compare)
+            if (trim($name) === trim(self::EXPECTED_SHEET)) {
+                $sheetId = $sheet->getAttribute('r:id');
+
+                // Parse relationships to find file
+                $relsDom = new \DOMDocument();
+                $relsDom->loadXML($relsXml);
+                $relsXpath = new \DOMXPath($relsDom);
+                $relsXpath->registerNamespace('rel', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
+
+                $rels = $relsXpath->query('//rel:Relationship[@Id="' . $sheetId . '"]');
+                if ($rels->length > 0) {
+                    return $rels->item(0)->getAttribute('Target');
+                }
+            }
         }
 
-        $sheet = $sheets->item(0);
-        $sheetId = $sheet->getAttribute('r:id');
-
-        // Parse relationships to find file
-        $relsDom = new \DOMDocument();
-        $relsDom->loadXML($relsXml);
-        $relsXpath = new \DOMXPath($relsDom);
-        $relsXpath->registerNamespace('rel', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
-
-        $rels = $relsXpath->query('//rel:Relationship[@Id="' . $sheetId . '"]');
-        if ($rels->length === 0) {
-            return null;
-        }
-
-        return $rels->item(0)->getAttribute('Target');
+        return null;
     }
 
     /**
@@ -152,7 +154,7 @@ class ExcelParser
 
                     $data[] = $record;
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $errors[] = "Error parsing row {$rowNum}: " . $e->getMessage();
             }
         }
