@@ -19,25 +19,25 @@ class ExcelParser
     public function parse(string $filePath): array
     {
         if (!file_exists($filePath)) {
-            throw new Exception("File not found: {$filePath}");
+            throw new \Exception("File not found: {$filePath}");
         }
 
         // Open .xlsx as ZIP
         $zip = new \ZipArchive();
         if (!$zip->open($filePath)) {
-            throw new Exception("Failed to open Excel file as ZIP");
+            throw new \Exception("Failed to open Excel file as ZIP");
         }
 
         // Read workbook.xml to find sheet relationships
         $workbookXml = $zip->getFromName('xl/workbook.xml');
         if (!$workbookXml) {
-            throw new Exception("workbook.xml not found in Excel file");
+            throw new \Exception("workbook.xml not found in Excel file");
         }
 
         // Read relationships to find sheet file names
         $relsXml = $zip->getFromName('xl/_rels/workbook.xml.rels');
         if (!$relsXml) {
-            throw new Exception("workbook.xml.rels not found in Excel file");
+            throw new \Exception("workbook.xml.rels not found in Excel file");
         }
 
         // Parse workbook.xml to find sheet name
@@ -46,13 +46,13 @@ class ExcelParser
         $sheetName = $this->findSheetFile($workbookDom, $relsXml);
 
         if (!$sheetName) {
-            throw new Exception("Sheet '" . self::EXPECTED_SHEET . "' not found in workbook");
+            throw new \Exception("Sheet '" . self::EXPECTED_SHEET . "' not found in workbook");
         }
 
         // Read the sheet XML
         $sheetXml = $zip->getFromName("xl/worksheets/{$sheetName}");
         if (!$sheetXml) {
-            throw new Exception("Sheet file not found: {$sheetName}");
+            throw new \Exception("Sheet file not found: {$sheetName}");
         }
 
         $zip->close();
