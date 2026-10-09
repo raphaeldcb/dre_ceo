@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Test Runner - Executa todos os testes do projeto
- * Sem dependências externas - usa autoloader simples
+ * Test Runner - Pure PHP Test Suite
+ * No external dependencies - uses only PHP standard library
  *
  * Uso: php tests/run.php
  */
@@ -10,29 +10,16 @@
 require_once __DIR__ . '/../autoload.php';
 require_once __DIR__ . '/TestCase.php';
 
-// Importar testes
+// Importar todos os testes
+require_once __DIR__ . '/ExcelParserTest.php';
 require_once __DIR__ . '/ModelsTest.php';
 
-// ExcelParserTest requer PhpSpreadsheet (opcional)
-$hasExcelTest = false;
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    require_once __DIR__ . '/../vendor/autoload.php';
-    require_once __DIR__ . '/ExcelParserTest.php';
-    $hasExcelTest = true;
-}
-
 echo "\n╔════════════════════════════════════════════════════════════════╗\n";
-echo "║   DRE CEO Dashboard - Test Suite                              ║\n";
+echo "║   DRE CEO Dashboard - Test Suite (Pure PHP)                   ║\n";
 echo "╚════════════════════════════════════════════════════════════════╝\n\n";
+echo "✅ No external dependencies - all tests use native PHP functions\n\n";
 
-$testClasses = $hasExcelTest
-    ? ['ExcelParserTest', 'ModelsTest']
-    : ['ModelsTest'];
-
-if (!$hasExcelTest) {
-    echo "⚠️  ExcelParserTest skipped (requires PhpSpreadsheet)\n";
-    echo "   To test ExcelParser, run: composer install\n\n";
-}
+$testClasses = ['ExcelParserTest', 'ModelsTest'];
 
 $totalTests = 0;
 $totalPassed = 0;
