@@ -57,6 +57,19 @@
         .positive { color: #10b981 !important; }
         .negative { color: #ef4444 !important; }
         .tab-content { padding: 20px 0; }
+        .chart-wrapper {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .chart-wrapper h6 {
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
         .form-select {
             background: #1a4a6a;
             border: 1px solid rgba(255,255,255,0.2);
@@ -165,17 +178,21 @@
                         <div class="row">
                             <!-- Line Chart -->
                             <div class="col-12 col-lg-6">
-                                <h6 class="mb-3">Evolução Mensal - Receita (Planejado vs Realizado)</h6>
-                                <div class="chart-container">
-                                    <canvas id="lineChart"></canvas>
+                                <div class="chart-wrapper">
+                                    <h6 class="mb-3">Evolução Mensal - Receita (Planejado vs Realizado)</h6>
+                                    <div class="chart-container">
+                                        <canvas id="lineChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Bar Chart -->
                             <div class="col-12 col-lg-6">
-                                <h6 class="mb-3">Variação por Mês</h6>
-                                <div class="chart-container">
-                                    <canvas id="barChart"></canvas>
+                                <div class="chart-wrapper">
+                                    <h6 class="mb-3">Variação por Mês</h6>
+                                    <div class="chart-container">
+                                        <canvas id="barChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
 
@@ -244,17 +261,21 @@
                         <div class="row">
                             <!-- Receita Comparison -->
                             <div class="col-12 col-lg-6">
-                                <h6 class="mb-3">RECEITA - Comparativo entre Áreas</h6>
-                                <div class="chart-container">
-                                    <canvas id="comparativeChart1"></canvas>
+                                <div class="chart-wrapper">
+                                    <h6 class="mb-3">RECEITA - Comparativo entre Áreas</h6>
+                                    <div class="chart-container">
+                                        <canvas id="comparativeChart1"></canvas>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- EBITDA Comparison -->
                             <div class="col-12 col-lg-6">
-                                <h6 class="mb-3">EBITDA - Comparativo entre Áreas</h6>
-                                <div class="chart-container">
-                                    <canvas id="comparativeChart2"></canvas>
+                                <div class="chart-wrapper">
+                                    <h6 class="mb-3">EBITDA - Comparativo entre Áreas</h6>
+                                    <div class="chart-container">
+                                        <canvas id="comparativeChart2"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </div>
