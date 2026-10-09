@@ -71,9 +71,18 @@ class ExcelParser
             }
 
             $sheetFile = $rels->item(0)->getAttribute('Target');
-            $sheetXml = $zip->getFromName("xl/worksheets/{$sheetFile}");
+
+            // Try with xl/ prefix first, then without
+            $sheetPath = "xl/{$sheetFile}";
+            $sheetXml = $zip->getFromName($sheetPath);
+
+            if (!$sheetXml && strpos($sheetFile, 'xl/') !== 0) {
+                // Try without xl/ if it's already in the path
+                $sheetXml = $zip->getFromName($sheetFile);
+            }
+
             if (!$sheetXml) {
-                throw new \Exception("Sheet XML not found: {$sheetFile}");
+                throw new \Exception("Sheet XML not found: tried {$sheetPath} and {$sheetFile}");
             }
 
             return $this->parseSheetData($sheetXml);
