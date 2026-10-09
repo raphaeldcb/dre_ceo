@@ -7,23 +7,24 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
+            color: #e0e0e0;
         }
         .navbar-custom {
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         .navbar-brand {
             font-size: 1.5rem;
             font-weight: bold;
-            color: white !important;
+            color: #f0f0f0 !important;
         }
         .welcome-section {
             padding: 60px 20px;
             text-align: center;
-            color: white;
+            color: #f0f0f0;
         }
         .welcome-section h1 {
             font-size: 3rem;
@@ -32,40 +33,44 @@
         }
         .welcome-section p {
             font-size: 1.2rem;
-            opacity: 0.9;
+            opacity: 0.85;
             margin-bottom: 40px;
+            color: #d0d0d0;
         }
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 30px;
             padding: 40px 20px;
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         .card-custom {
-            background: white;
+            background: #0f3460;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
             transition: transform 0.3s, box-shadow 0.3s;
             text-decoration: none;
             color: inherit;
             display: flex;
             flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .card-custom:hover {
             transform: translateY(-10px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
             color: inherit;
             text-decoration: none;
+            border-color: rgba(255, 255, 255, 0.2);
         }
         .card-icon {
             font-size: 3rem;
             padding: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f3460 0%, #1a5f7a 100%);
             color: white;
             text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         .card-content {
             padding: 30px;
@@ -75,17 +80,17 @@
             margin-bottom: 10px;
             font-size: 1.5rem;
             font-weight: bold;
-            color: #333;
+            color: #e0f0ff;
         }
         .card-content p {
-            color: #666;
+            color: #b0d0e0;
             margin-bottom: 20px;
             line-height: 1.6;
         }
         .card-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
+            background: linear-gradient(135deg, #0f3460 0%, #1a5f7a 100%);
+            color: #f0f0f0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 10px 20px;
             border-radius: 5px;
             font-weight: 600;
@@ -94,18 +99,20 @@
             margin-top: auto;
         }
         .card-custom:hover .card-btn {
-            background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+            background: linear-gradient(135deg, #1a5f7a 0%, #244a68 100%);
+            border-color: rgba(255, 255, 255, 0.3);
         }
         .stats {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(15, 52, 96, 0.3);
             border-radius: 15px;
             padding: 30px;
             margin: 40px auto;
-            max-width: 1200px;
-            color: white;
+            max-width: 1000px;
+            color: #e0f0ff;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .stat-item {
             text-align: center;
@@ -114,10 +121,12 @@
             font-size: 2rem;
             font-weight: bold;
             margin-bottom: 10px;
+            color: #e0f0ff;
         }
         .stat-label {
             font-size: 0.9rem;
-            opacity: 0.9;
+            opacity: 0.8;
+            color: #b0d0e0;
         }
     </style>
 </head>
@@ -180,20 +189,10 @@
                 <div class="card-btn">Acessar →</div>
             </div>
         </a>
-
-        <!-- Analytics Card -->
-        <a href="/dashboard?area_id=1" class="card-custom">
-            <div class="card-icon">📊</div>
-            <div class="card-content">
-                <h2>Análise por Área</h2>
-                <p>Acesse dados específicos de cada área: Compras BR, Siga, Eficaz e Outsourcing.</p>
-                <div class="card-btn">Acessar →</div>
-            </div>
-        </a>
     </div>
 
     <!-- Footer -->
-    <footer style="text-align: center; padding: 40px 20px; color: white;">
+    <footer style="text-align: center; padding: 40px 20px; color: #b0d0e0; border-top: 1px solid rgba(255, 255, 255, 0.1);">
         <p style="margin: 0; opacity: 0.8;">DRE CEO Dashboard © 2026 - Sistema de Gestão Financeira</p>
     </footer>
 

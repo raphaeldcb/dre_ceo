@@ -7,23 +7,24 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .login-container {
-            background: white;
+            background: #0f3460;
             border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             overflow: hidden;
             max-width: 450px;
             width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .login-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #0f3460 0%, #1a5f7a 100%);
+            color: #f0f0f0;
             padding: 40px 30px;
             text-align: center;
         }
@@ -34,28 +35,57 @@
         }
         .login-header p {
             margin: 10px 0 0 0;
-            opacity: 0.9;
+            opacity: 0.85;
+            color: #d0d0d0;
         }
         .login-body {
             padding: 40px;
         }
+        .form-label {
+            color: #e0f0ff;
+            font-weight: 500;
+        }
+        .form-control {
+            background: #1a4a6a;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #f0f0f0;
+        }
+        .form-control::placeholder {
+            color: #80a0b0;
+        }
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: #1a4a6a;
+            border-color: #1a5f7a;
+            box-shadow: 0 0 0 0.2rem rgba(26, 95, 122, 0.25);
+            color: #f0f0f0;
         }
         .btn-login {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
+            background: linear-gradient(135deg, #0f3460 0%, #1a5f7a 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 12px;
             font-weight: 600;
             margin-top: 20px;
+            color: #f0f0f0;
         }
         .btn-login:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
-            color: white;
+            background: linear-gradient(135deg, #1a5f7a 0%, #244a68 100%);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #f0f0f0;
         }
         .error-message {
             display: none;
+        }
+        .text-muted {
+            color: #b0d0e0 !important;
+        }
+        code {
+            background: rgba(26, 95, 122, 0.3);
+            color: #e0f0ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        hr {
+            border-color: rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
