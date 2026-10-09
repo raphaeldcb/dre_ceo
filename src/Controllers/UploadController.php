@@ -87,16 +87,20 @@ class UploadController
                 $pdo->beginTransaction();
 
                 try {
-                    // Delete old records for this area/year/month
+                    // Delete old records for this area/year/month combination
                     $deleteStmt = $pdo->prepare(
                         'DELETE FROM dre_valores WHERE area_id = ? AND ano = ? AND mes = ?'
                     );
                     $deleteStmt->execute([$areaId, $ano, $mes]);
 
-                    // Insert new records
+                    // Insert new records with duplicate handling
                     $insertStmt = $pdo->prepare(
                         'INSERT INTO dre_valores (area_id, dre_linha_id, mes, ano, valor_planejado, valor_realizado, status)
-                         VALUES (?, ?, ?, ?, ?, ?, ?)'
+                         VALUES (?, ?, ?, ?, ?, ?, ?)
+                         ON DUPLICATE KEY UPDATE
+                         valor_planejado = VALUES(valor_planejado),
+                         valor_realizado = VALUES(valor_realizado),
+                         status = VALUES(status)'
                     );
 
                     $inserted = 0;
