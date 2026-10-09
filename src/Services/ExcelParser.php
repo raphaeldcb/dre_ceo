@@ -77,17 +77,25 @@ class ExcelParser
             $name = $sheet->getAttribute('name');
             // Compare names (trim whitespace and compare)
             if (trim($name) === trim(self::EXPECTED_SHEET)) {
-                $sheetId = $sheet->getAttribute('r:id');
+                // Get r:id using namespace-aware method
+                $sheetId = $sheet->getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id');
 
-                // Parse relationships to find file
-                $relsDom = new \DOMDocument();
-                $relsDom->loadXML($relsXml);
-                $relsXpath = new \DOMXPath($relsDom);
-                $relsXpath->registerNamespace('rel', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
+                // If r:id not found, try regular id attribute
+                if (!$sheetId) {
+                    $sheetId = $sheet->getAttribute('id');
+                }
 
-                $rels = $relsXpath->query('//rel:Relationship[@Id="' . $sheetId . '"]');
-                if ($rels->length > 0) {
-                    return $rels->item(0)->getAttribute('Target');
+                if ($sheetId) {
+                    // Parse relationships to find file
+                    $relsDom = new \DOMDocument();
+                    $relsDom->loadXML($relsXml);
+                    $relsXpath = new \DOMXPath($relsDom);
+                    $relsXpath->registerNamespace('rel', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
+
+                    $rels = $relsXpath->query('//rel:Relationship[@Id="' . $sheetId . '"]');
+                    if ($rels->length > 0) {
+                        return $rels->item(0)->getAttribute('Target');
+                    }
                 }
             }
         }
