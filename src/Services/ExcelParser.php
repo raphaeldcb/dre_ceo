@@ -2,18 +2,15 @@
 
 namespace App\Services;
 
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use Exception;
-
 class ExcelParser
 {
     private const EXPECTED_SHEET = 'DRE Sintético';
-    private const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-    private const START_ROW = 3; // Row 3 is first DRE line
-    private const END_ROW = 13; // Row 13 is last DRE line (11 lines total)
+    private const START_ROW = 3;
+    private const END_ROW = 13;
 
     /**
-     * Parse DRE Excel file and extract monthly data
+     * Parse DRE Excel file (.xlsx) using only PHP native functions
+     * .xlsx is a ZIP file containing XML files
      *
      * @param string $filePath Path to .xlsx file
      * @return array ['data' => [...], 'linhas_count' => int, 'errors' => []]
@@ -25,51 +22,138 @@ class ExcelParser
             throw new Exception("File not found: {$filePath}");
         }
 
-        try {
-            $spreadsheet = IOFactory::load($filePath);
-        } catch (Exception $e) {
-            throw new Exception("Failed to load Excel file: " . $e->getMessage());
+        // Open .xlsx as ZIP
+        $zip = new \ZipArchive();
+        if (!$zip->open($filePath)) {
+            throw new Exception("Failed to open Excel file as ZIP");
         }
 
-        $sheet = $spreadsheet->getSheetByName(self::EXPECTED_SHEET);
-        if (!$sheet) {
+        // Read workbook.xml to find sheet relationships
+        $workbookXml = $zip->getFromName('xl/workbook.xml');
+        if (!$workbookXml) {
+            throw new Exception("workbook.xml not found in Excel file");
+        }
+
+        // Read relationships to find sheet file names
+        $relsXml = $zip->getFromName('xl/_rels/workbook.xml.rels');
+        if (!$relsXml) {
+            throw new Exception("workbook.xml.rels not found in Excel file");
+        }
+
+        // Parse workbook.xml to find sheet name
+        $workbookDom = new \DOMDocument();
+        $workbookDom->loadXML($workbookXml);
+        $sheetName = $this->findSheetFile($workbookDom, $relsXml);
+
+        if (!$sheetName) {
             throw new Exception("Sheet '" . self::EXPECTED_SHEET . "' not found in workbook");
         }
+
+        // Read the sheet XML
+        $sheetXml = $zip->getFromName("xl/worksheets/{$sheetName}");
+        if (!$sheetXml) {
+            throw new Exception("Sheet file not found: {$sheetName}");
+        }
+
+        $zip->close();
+
+        // Parse sheet data
+        return $this->parseSheetXml($sheetXml);
+    }
+
+    /**
+     * Find the sheet file corresponding to the expected sheet name
+     */
+    private function findSheetFile(\DOMDocument $workbookDom, string $relsXml): ?string
+    {
+        $xpath = new \DOMXPath($workbookDom);
+        $xpath->registerNamespace('wb', 'http://schemas.openxmlformats.org/spreadsheetml/2006/main');
+
+        // Find sheets
+        $sheets = $xpath->query('//wb:sheet[@name="' . self::EXPECTED_SHEET . '"]');
+
+        if ($sheets->length === 0) {
+            return null;
+        }
+
+        $sheet = $sheets->item(0);
+        $sheetId = $sheet->getAttribute('r:id');
+
+        // Parse relationships to find file
+        $relsDom = new \DOMDocument();
+        $relsDom->loadXML($relsXml);
+        $relsXpath = new \DOMXPath($relsDom);
+        $relsXpath->registerNamespace('rel', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
+
+        $rels = $relsXpath->query('//rel:Relationship[@Id="' . $sheetId . '"]');
+        if ($rels->length === 0) {
+            return null;
+        }
+
+        return $rels->item(0)->getAttribute('Target');
+    }
+
+    /**
+     * Parse sheet XML and extract data
+     */
+    private function parseSheetXml(string $sheetXml): array
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML($sheetXml);
+
+        $xpath = new \DOMXPath($dom);
+        $xpath->registerNamespace('ws', 'http://schemas.openxmlformats.org/spreadsheetml/2006/main');
+
+        // Get all rows
+        $rows = $xpath->query('//ws:row');
 
         $data = [];
         $errors = [];
 
-        // Parse rows 3-13 (11 DRE lines)
-        for ($rowIndex = self::START_ROW; $rowIndex <= self::END_ROW; $rowIndex++) {
-            $linhaId = $rowIndex - 2; // DRE line ID (1-11)
+        // Parse rows 3-13 (DRE lines)
+        foreach ($rows as $row) {
+            $rowNum = (int)$row->getAttribute('r');
+
+            if ($rowNum < self::START_ROW || $rowNum > self::END_ROW) {
+                continue;
+            }
+
+            $linhaId = $rowNum - 2; // DRE line ID (1-11)
 
             try {
-                // Extract 12 months of data for this line
+                // Get cells in this row
+                $cells = $xpath->query('.//ws:c', $row);
+                $cellValues = [];
+
+                foreach ($cells as $cell) {
+                    $ref = $cell->getAttribute('r');
+                    $value = $this->getCellValue($cell, $dom, $xpath);
+                    $cellValues[$ref] = $value;
+                }
+
+                // Extract monthly data
                 for ($mesNum = 1; $mesNum <= 12; $mesNum++) {
-                    // Each month has 5 columns (jan: 2-6, fev: 7-11, etc.)
-                    // Starting at column 2 (index 1)
                     $colStart = 2 + (($mesNum - 1) * 5);
 
                     $record = [
                         'linha_id' => $linhaId,
                         'mes' => $mesNum,
-                        'valor_planejado' => $this->getCellValue($sheet, $colStart, $rowIndex),
-                        'valor_realizado' => $this->getCellValue($sheet, $colStart + 1, $rowIndex),
-                        'analise_vertical_planejado' => $this->getCellValue($sheet, $colStart + 2, $rowIndex),
-                        'analise_vertical_realizado' => $this->getCellValue($sheet, $colStart + 3, $rowIndex),
-                        'variacao_planejado_realizado' => $this->getCellValue($sheet, $colStart + 4, $rowIndex),
+                        'valor_planejado' => $this->getCellValueByCol($cellValues, $colStart, $rowNum),
+                        'valor_realizado' => $this->getCellValueByCol($cellValues, $colStart + 1, $rowNum),
+                        'analise_vertical_planejado' => $this->getCellValueByCol($cellValues, $colStart + 2, $rowNum),
+                        'analise_vertical_realizado' => $this->getCellValueByCol($cellValues, $colStart + 3, $rowNum),
+                        'variacao_planejado_realizado' => $this->getCellValueByCol($cellValues, $colStart + 4, $rowNum),
                     ];
 
-                    // Análise horizontal only from Feb onwards (mesNum > 1)
                     if ($mesNum > 1) {
-                        $record['analise_horizontal_planejado'] = $this->getCellValue($sheet, $colStart + 5, $rowIndex);
-                        $record['analise_horizontal_realizado'] = $this->getCellValue($sheet, $colStart + 6, $rowIndex);
+                        $record['analise_horizontal_planejado'] = $this->getCellValueByCol($cellValues, $colStart + 5, $rowNum);
+                        $record['analise_horizontal_realizado'] = $this->getCellValueByCol($cellValues, $colStart + 6, $rowNum);
                     }
 
                     $data[] = $record;
                 }
             } catch (Exception $e) {
-                $errors[] = "Error parsing row {$rowIndex} (linha_id {$linhaId}): " . $e->getMessage();
+                $errors[] = "Error parsing row {$rowNum}: " . $e->getMessage();
             }
         }
 
@@ -81,57 +165,52 @@ class ExcelParser
     }
 
     /**
-     * Extract numeric value from a cell, return null if non-numeric
-     *
-     * @param object $sheet PhpSpreadsheet sheet object
-     * @param int $col Column number (1-indexed)
-     * @param int $row Row number
-     * @return float|null
+     * Get cell value from XML element
      */
-    private function getCellValue($sheet, $col, $row): ?float
+    private function getCellValue(\DOMElement $cell, \DOMDocument $dom, \DOMXPath $xpath): ?float
     {
-        try {
-            // Convert column number to letter (1='A', 2='B', etc.)
-            $colLetter = $this->columnNumberToLetter($col);
-            $cellRef = $colLetter . $row;
+        $t = $cell->getAttribute('t');
 
-            $cell = $sheet->getCell($cellRef);
-            $value = $cell->getValue();
-
-            // Return null for empty/null values
-            if ($value === null || $value === '') {
-                return null;
-            }
-
-            // Try to convert to float
-            if (is_numeric($value)) {
-                return floatval($value);
-            }
-
-            // If value is string but numeric, convert it
-            if (is_string($value) && is_numeric($value)) {
-                return floatval($value);
-            }
-
-            // Non-numeric values return null
-            return null;
-        } catch (Exception $e) {
+        // Get value element
+        $values = $xpath->query('.//ws:v', $cell);
+        if ($values->length === 0) {
             return null;
         }
+
+        $value = $values->item(0)->nodeValue;
+
+        // If it's a shared string, skip
+        if ($t === 's') {
+            return null;
+        }
+
+        // Convert to float
+        if (is_numeric($value)) {
+            return floatval($value);
+        }
+
+        return null;
     }
 
     /**
-     * Convert column number (1-indexed) to Excel column letter
-     * 1='A', 2='B', ..., 26='Z', 27='AA', etc.
-     *
-     * @param int $col Column number
-     * @return string Column letter(s)
+     * Get cell value from cell array by column and row
+     */
+    private function getCellValueByCol(array $cellValues, int $col, int $row): ?float
+    {
+        $colLetter = $this->columnNumberToLetter($col);
+        $cellRef = $colLetter . $row;
+
+        return $cellValues[$cellRef] ?? null;
+    }
+
+    /**
+     * Convert column number to Excel letter
      */
     private function columnNumberToLetter(int $col): string
     {
         $letter = '';
         while ($col > 0) {
-            $col--; // Adjust for 0-indexing in modulo operation
+            $col--;
             $letter = chr(65 + ($col % 26)) . $letter;
             $col = intdiv($col, 26);
         }
