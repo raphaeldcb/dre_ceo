@@ -192,7 +192,7 @@
             const variacao = [];
 
             for (let mes = 1; mes <= 12; mes++) {
-                const mes_data = receita.meses[mes];
+                const mes_data = receita.meses.find(m => m.mes === mes);
                 planejado.push(mes_data ? (mes_data.valor_planejado / 1000) : 0);
                 realizado.push(mes_data ? (mes_data.valor_realizado / 1000) : 0);
                 variacao.push(mes_data ? (mes_data.variancia / 1000) : 0);
@@ -268,7 +268,7 @@
                 let totalRealizado = 0;
 
                 for (let mes = 1; mes <= 12; mes++) {
-                    const mes_data = linha.meses[mes];
+                    const mes_data = linha.meses.find(m => m.mes === mes);
                     if (mes_data) {
                         totalPlanejado += mes_data.valor_planejado;
                         totalRealizado += mes_data.valor_realizado;
@@ -305,7 +305,7 @@
             const monthIndex = 12; // Last month data
 
             const valores = data.areas.map(area => {
-                const mes_data = area.meses[monthIndex];
+                const mes_data = area.meses.find(m => m.mes === monthIndex);
                 return mes_data ? mes_data.valor_realizado / 1000 : 0;
             });
 
