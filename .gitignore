@@ -1,0 +1,56 @@
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Composer
+vendor/
+
+# IDE and Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Operating System
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Application Specific
+public/uploads/*
+!public/uploads/.gitkeep
+logs/*
+!logs/.gitkeep
+tmp/*
+!tmp/.gitkeep
+cache/*
+!cache/.gitkeep
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+# PHP Built-in Server
+.php_server
+
+# Testing
+tests/reports/
+coverage/
+
+# Backup Files
+*.bak
+*.backup
+*.tmp
+*.temp
+
+# Temporary Files
+*.log
+*.swp
+*.*~
