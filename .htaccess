@@ -1,15 +1,9 @@
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /dre_ceo/
+# Serve index.php as default
+<IfModule mod_dir.c>
+    DirectoryIndex index.php index.html
+</IfModule>
 
-    # Remove .php extension
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-
-    # Route everything through public/index.php
-    RewriteRule ^(.*)$ public/index.php?route=$1 [QSA,L]
-
-    # Direct access to public folder
-    RewriteCond %{REQUEST_URI} ^/dre_ceo/public
-    RewriteRule ^public/(.*)$ public/$1 [L]
+# Enable PHP execution
+<IfModule mod_php.c>
+    php_flag short_tags on
 </IfModule>
