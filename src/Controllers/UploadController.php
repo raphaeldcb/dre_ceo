@@ -108,7 +108,7 @@ class UploadController
                         $inserted += $insertStmt->execute([
                             $areaId,
                             $record['linha_id'],
-                            $mes,
+                            $record['mes'],  // Use mes from record, not from form
                             $ano,
                             $record['valor_planejado'] ?? 0,
                             $record['valor_realizado'] ?? 0,
