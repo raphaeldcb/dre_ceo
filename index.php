@@ -32,6 +32,7 @@ if ($requestPath !== '/' && !in_array(pathinfo($requestPath, PATHINFO_EXTENSION)
 }
 
 // Rewrite to public/index.php
-chdir('public');
-require 'index.php';
+$publicDir = __DIR__ . '/public';
+chdir($publicDir);
+require $publicDir . '/index.php';
 ?>

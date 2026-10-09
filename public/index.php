@@ -15,8 +15,10 @@ if (!file_exists(__DIR__ . '/../.env')) {
 // Load PSR-4 autoloader (pure PHP, no Composer)
 require_once __DIR__ . '/../autoload.php';
 
-// Start session
-session_start();
+// Session already started by parent index.php, skip if already active
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Initialize CSRF token if not present
 if (empty($_SESSION['csrf_token'])) {
