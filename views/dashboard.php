@@ -158,9 +158,12 @@
         // Initialize
         async function init() {
             try {
+                console.log('Initializing dashboard for area', areaId, 'year', ano);
+
                 // Load area data
                 const areaResponse = await fetch(`/api/dashboard/area-data?area_id=${areaId}&ano=${ano}`);
                 areaData = await areaResponse.json();
+                console.log('Loaded areaData:', areaData);
 
                 // Render area charts
                 renderAreaCharts();
@@ -183,8 +186,12 @@
 
         function renderAreaCharts() {
             try {
+                console.log('renderAreaCharts called, areaData.linhas:', areaData.linhas);
+
                 // Get RECEITA line data (linha_id = 1)
                 const receita = areaData.linhas.find(l => l.id === 1);
+                console.log('Found receita:', receita);
+
                 if (!receita || !receita.meses || receita.meses.length === 0) {
                     console.warn('No RECEITA data available');
                     return;
