@@ -1,0 +1,10 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "123456",
+      "name": "Administrador",
+      "created_at": "2026-10-09"
+    }
+  ]
+}

@@ -4,11 +4,22 @@ namespace App\Controllers;
 
 class AuthController
 {
-    // Simple in-memory user database (replace with real DB in production)
-    private const USERS = [
-        'admin' => '123456',
-        'user' => 'password'
-    ];
+    private const USERS_FILE = __DIR__ . '/../../users.json';
+
+    private function loadUsers(): array
+    {
+        if (!file_exists(self::USERS_FILE)) {
+            return [];
+        }
+        $data = json_decode(file_get_contents(self::USERS_FILE), true);
+        return $data['users'] ?? [];
+    }
+
+    private function saveUsers(array $users): bool
+    {
+        $data = ['users' => $users];
+        return file_put_contents(self::USERS_FILE, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false;
+    }
 
     /**
      * Show login form
@@ -50,8 +61,17 @@ class AuthController
             $username = trim($input['username']);
             $password = trim($input['password']);
 
-            // Validate credentials
-            if (!isset(self::USERS[$username]) || self::USERS[$username] !== $password) {
+            // Load users and validate credentials
+            $users = $this->loadUsers();
+            $user = null;
+            foreach ($users as $u) {
+                if ($u['username'] === $username && $u['password'] === $password) {
+                    $user = $u;
+                    break;
+                }
+            }
+
+            if (!$user) {
                 http_response_code(401);
                 echo json_encode(['success' => false, 'error' => 'Usuário ou senha inválidos']);
                 return;
@@ -142,21 +162,38 @@ class AuthController
                 return;
             }
 
-            // Check if user already exists (in simple array)
-            if (isset(self::USERS[$username])) {
-                http_response_code(400);
-                echo json_encode(['success' => false, 'error' => 'Usuário já existe']);
-                return;
+            // Load existing users and check if user already exists
+            $users = $this->loadUsers();
+            foreach ($users as $u) {
+                if ($u['username'] === $username) {
+                    http_response_code(400);
+                    echo json_encode(['success' => false, 'error' => 'Usuário já existe']);
+                    return;
+                }
             }
 
-            // Note: In production, save to database with proper hashing
-            // For now, just confirm registration would work
-            http_response_code(201);
-            echo json_encode([
-                'success' => true,
-                'message' => 'Cadastro realizado com sucesso!',
-                'user' => $username
-            ]);
+            // Add new user
+            $newUser = [
+                'username' => $username,
+                'password' => $password, // In production, use password_hash()
+                'name' => $name,
+                'created_at' => date('Y-m-d')
+            ];
+
+            $users[] = $newUser;
+
+            // Save users
+            if ($this->saveUsers($users)) {
+                http_response_code(201);
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Cadastro realizado com sucesso!',
+                    'user' => $username
+                ]);
+            } else {
+                http_response_code(500);
+                echo json_encode(['success' => false, 'error' => 'Erro ao salvar cadastro']);
+            }
 
         } catch (\Exception $e) {
             http_response_code(500);
