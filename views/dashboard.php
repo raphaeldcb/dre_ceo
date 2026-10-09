@@ -36,23 +36,26 @@
         .metric-card {
             text-align: center;
             padding: 20px;
-            background: #1a4a6a;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
             margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .metric-value {
             font-size: 1.8rem;
             font-weight: bold;
-            color: #e0f0ff;
+            color: #1f2937;
         }
         .metric-label {
             font-size: 0.85rem;
-            color: #b0d0e0;
+            color: #6b7280;
             text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 10px;
         }
-        .positive { color: #a0c0d0; }
-        .negative { color: #808090; }
+        .positive { color: #10b981 !important; }
+        .negative { color: #ef4444 !important; }
         .tab-content { padding: 20px 0; }
         .form-select {
             background: #1a4a6a;
@@ -165,21 +168,6 @@
                                 <h6 class="mb-3">Evolução Mensal - Receita (Planejado vs Realizado)</h6>
                                 <div class="chart-container">
                                     <canvas id="lineChart"></canvas>
-                                </div>
-                                <!-- Value Cards -->
-                                <div class="row mt-3 g-2">
-                                    <div class="col-6">
-                                        <div style="background: white; border-radius: 10px; padding: 15px; text-align: center; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                                            <div style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 8px;">PLANEJADO</div>
-                                            <div id="planejadoValue" style="font-size: 1.3rem; font-weight: 700; color: #10b981;">R$ 0,00</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div style="background: white; border-radius: 10px; padding: 15px; text-align: center; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                                            <div style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 8px;">REALIZADO</div>
-                                            <div id="realizadoValue" style="font-size: 1.3rem; font-weight: 700; color: #ef4444;">R$ 0,00</div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 
@@ -422,19 +410,6 @@
                     scales: { y: { beginAtZero: true } }
                 }
             });
-
-            // Update value cards with last month data (December - mes 12)
-            const lastMonthData = receita.meses.find(m => m.mes === 12);
-            if (lastMonthData) {
-                const planejadoVal = lastMonthData.valor_planejado;
-                const realizadoVal = lastMonthData.valor_realizado;
-
-                document.getElementById('planejadoValue').textContent = formatBR(planejadoVal);
-                document.getElementById('planejadoValue').style.color = planejadoVal >= 0 ? '#10b981' : '#ef4444';
-
-                document.getElementById('realizadoValue').textContent = formatBR(realizadoVal);
-                document.getElementById('realizadoValue').style.color = realizadoVal >= 0 ? '#10b981' : '#ef4444';
-            }
             } catch (err) {
                 console.error('Error rendering area charts:', err);
             }
