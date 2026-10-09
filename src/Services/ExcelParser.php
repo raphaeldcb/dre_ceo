@@ -68,31 +68,42 @@ class ExcelParser
     {
         $xpath = new \DOMXPath($workbookDom);
         $xpath->registerNamespace('wb', 'http://schemas.openxmlformats.org/spreadsheetml/2006/main');
-        $xpath->registerNamespace('r', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
 
-        // Find all sheets
+        // Find all sheets - use getElementByTagName as backup
         $allSheets = $xpath->query('//wb:sheet');
 
+        // If XPath fails, try direct element access
+        if ($allSheets->length === 0) {
+            $sheets = $workbookDom->getElementsByTagNameNS('http://schemas.openxmlformats.org/spreadsheetml/2006/main', 'sheet');
+            $allSheets = $sheets;
+        }
+
+        // Try to find sheet by name
         foreach ($allSheets as $sheet) {
             $name = $sheet->getAttribute('name');
-            // Compare names (trim whitespace and compare)
+
             if (trim($name) === trim(self::EXPECTED_SHEET)) {
-                // Get r:id using namespace-aware method
+                // Get relationship ID - try both methods
                 $sheetId = $sheet->getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id');
 
-                // If r:id not found, try regular id attribute
                 if (!$sheetId) {
-                    $sheetId = $sheet->getAttribute('id');
+                    // Some Excel files use attributes without namespace
+                    foreach ($sheet->attributes as $attr) {
+                        if ($attr->localName === 'id' || $attr->name === 'r:id') {
+                            $sheetId = $attr->value;
+                            break;
+                        }
+                    }
                 }
 
                 if ($sheetId) {
-                    // Parse relationships to find file
+                    // Parse relationships
                     $relsDom = new \DOMDocument();
                     $relsDom->loadXML($relsXml);
                     $relsXpath = new \DOMXPath($relsDom);
                     $relsXpath->registerNamespace('rel', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
 
-                    $rels = $relsXpath->query('//rel:Relationship[@Id="' . $sheetId . '"]');
+                    $rels = $relsXpath->query("//rel:Relationship[@Id='{$sheetId}']");
                     if ($rels->length > 0) {
                         return $rels->item(0)->getAttribute('Target');
                     }
