@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /dre_ceo/
+
+    # Remove .php extension
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Route everything through public/index.php
+    RewriteRule ^(.*)$ public/index.php?route=$1 [QSA,L]
+
+    # Direct access to public folder
+    RewriteCond %{REQUEST_URI} ^/dre_ceo/public
+    RewriteRule ^public/(.*)$ public/$1 [L]
+</IfModule>
