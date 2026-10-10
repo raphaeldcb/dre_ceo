@@ -7,3 +7,16 @@
 <IfModule mod_php.c>
     php_flag short_tags on
 </IfModule>
+
+# Enable rewrite engine for routing
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /dre_ceo/
+
+    # Don't rewrite if accessing a real file or directory
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Route all requests to index.php
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
