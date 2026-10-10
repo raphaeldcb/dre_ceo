@@ -8,6 +8,11 @@
     php_flag short_tags on
 </IfModule>
 
+# Try FallbackResource first (more reliable on shared hosting)
+<IfModule mod_dir.c>
+    FallbackResource /dre_ceo/index.php
+</IfModule>
+
 # Enable rewrite engine for routing
 <IfModule mod_rewrite.c>
     RewriteEngine On
