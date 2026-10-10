@@ -196,24 +196,23 @@
                                 </div>
                             </div>
 
-                            <!-- Data Table -->
-                            <div class="col-12">
-                                <h6 class="mb-3">Dados Detalhados - Consolidado</h6>
-                                <div class="table-responsive">
-                                    <table class="table table-hover table-sm">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Linha</th>
-                                                <th class="text-end">Planejado</th>
-                                                <th class="text-end">Realizado</th>
-                                                <th class="text-end">Variação</th>
-                                                <th class="text-end">%</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="dataTable">
-                                            <!-- Populated by JS -->
-                                        </tbody>
-                                    </table>
+                            <!-- Margem de Contribuição Chart -->
+                            <div class="col-12 col-lg-6">
+                                <div class="chart-wrapper">
+                                    <h6 class="mb-3">Margem de Contribuição - Variação</h6>
+                                    <div class="chart-container">
+                                        <canvas id="margemChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- EBITDA Chart -->
+                            <div class="col-12 col-lg-6">
+                                <div class="chart-wrapper">
+                                    <h6 class="mb-3">EBITDA - Variação</h6>
+                                    <div class="chart-container">
+                                        <canvas id="ebitdaChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
 
@@ -431,6 +430,68 @@
                     scales: { y: { beginAtZero: true } }
                 }
             });
+
+            // Margem de Contribuição Chart
+            const margem = areaData.linhas.find(l => l.id === 6);
+            if (margem && margem.meses && margem.meses.length > 0) {
+                const margemVariacao = [];
+                for (let mes = 1; mes <= 12; mes++) {
+                    const mes_data = margem.meses.find(m => m.mes === mes);
+                    margemVariacao.push(mes_data ? (mes_data.variancia / 1000) : 0);
+                }
+                const margemCtx = document.getElementById('margemChart').getContext('2d');
+                new Chart(margemCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Variação (R$ mil)',
+                            data: margemVariacao,
+                            backgroundColor: margemVariacao.map(v => v >= 0 ? '#10b981' : '#ef4444'),
+                            borderRadius: 4,
+                            borderWidth: 1,
+                            borderColor: margemVariacao.map(v => v >= 0 ? '#059669' : '#dc2626')
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: true } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+
+            // EBITDA Chart
+            const ebitda = areaData.linhas.find(l => l.id === 8);
+            if (ebitda && ebitda.meses && ebitda.meses.length > 0) {
+                const ebitdaVariacao = [];
+                for (let mes = 1; mes <= 12; mes++) {
+                    const mes_data = ebitda.meses.find(m => m.mes === mes);
+                    ebitdaVariacao.push(mes_data ? (mes_data.variancia / 1000) : 0);
+                }
+                const ebitdaCtx = document.getElementById('ebitdaChart').getContext('2d');
+                new Chart(ebitdaCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Variação (R$ mil)',
+                            data: ebitdaVariacao,
+                            backgroundColor: ebitdaVariacao.map(v => v >= 0 ? '#10b981' : '#ef4444'),
+                            borderRadius: 4,
+                            borderWidth: 1,
+                            borderColor: ebitdaVariacao.map(v => v >= 0 ? '#059669' : '#dc2626')
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: true } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
             } catch (err) {
                 console.error('Error rendering area charts:', err);
             }
