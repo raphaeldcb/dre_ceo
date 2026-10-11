@@ -132,8 +132,10 @@ class ExcelParser
                     $colStart = 7 + (($mes - 2) * 7); // G para fevereiro, N para março, etc
                 }
 
-                // Análise Vertical Realizado está em coluna 6 (relativa ao início do mês)
-                $analiseVerticalOffset = ($mes === 1) ? 4 : 6;
+                // Análise Vertical Realizado position:
+                // Janeiro: 4ª coluna (6 total) = +3
+                // Fevereiro+: 6ª coluna (7 total) = +5
+                $analiseVerticalOffset = ($mes === 1) ? 3 : 5;
 
                 $data[] = [
                     'linha_id' => $linhaId,
