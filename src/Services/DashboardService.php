@@ -52,6 +52,7 @@ class DashboardService
                         'valor_realizado' => $valor->valor_realizado,
                         'variancia' => $valor->variancia,
                         'percentual_realizacao' => $valor->percentual_realizacao,
+                        'analise_vertical_realizado' => $valor->analise_vertical_realizado,
                     ];
                 }
             }

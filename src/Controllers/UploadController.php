@@ -95,11 +95,12 @@ class UploadController
 
                     // Insert new records with duplicate handling
                     $insertStmt = $pdo->prepare(
-                        'INSERT INTO dre_valores (area_id, dre_linha_id, mes, ano, valor_planejado, valor_realizado, status)
-                         VALUES (?, ?, ?, ?, ?, ?, ?)
+                        'INSERT INTO dre_valores (area_id, dre_linha_id, mes, ano, valor_planejado, valor_realizado, analise_vertical_realizado, status)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                          ON DUPLICATE KEY UPDATE
                          valor_planejado = VALUES(valor_planejado),
                          valor_realizado = VALUES(valor_realizado),
+                         analise_vertical_realizado = VALUES(analise_vertical_realizado),
                          status = VALUES(status)'
                     );
 
@@ -108,10 +109,11 @@ class UploadController
                         $inserted += $insertStmt->execute([
                             $areaId,
                             $record['linha_id'],
-                            $record['mes'],  // Use mes from record, not from form
+                            $record['mes'],
                             $ano,
                             $record['valor_planejado'] ?? 0,
                             $record['valor_realizado'] ?? 0,
+                            $record['analise_vertical_realizado'] ?? 0,
                             'FINALIZADO'
                         ]) ? 1 : 0;
                     }

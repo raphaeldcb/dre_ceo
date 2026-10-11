@@ -132,11 +132,15 @@ class ExcelParser
                     $colStart = 7 + (($mes - 2) * 7); // G para fevereiro, N para março, etc
                 }
 
+                // Análise Vertical Realizado está em coluna 6 (relativa ao início do mês)
+                $analiseVerticalOffset = ($mes === 1) ? 4 : 6;
+
                 $data[] = [
                     'linha_id' => $linhaId,
                     'mes' => $mes,
                     'valor_planejado' => $this->getCellValue($cellValues, $colStart, $rowNum),
                     'valor_realizado' => $this->getCellValue($cellValues, $colStart + 1, $rowNum),
+                    'analise_vertical_realizado' => $this->getCellValue($cellValues, $colStart + $analiseVerticalOffset, $rowNum),
                 ];
             }
         }

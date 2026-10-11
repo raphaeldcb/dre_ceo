@@ -437,7 +437,7 @@
                 const margemAnalise = [];
                 for (let mes = 1; mes <= 12; mes++) {
                     const mes_data = margem.meses.find(m => m.mes === mes);
-                    margemAnalise.push(mes_data ? mes_data.analise_vertical_planejado : 0);
+                    margemAnalise.push(mes_data ? mes_data.analise_vertical_realizado : 0);
                 }
                 const margemCtx = document.getElementById('margemChart').getContext('2d');
                 new Chart(margemCtx, {
@@ -468,7 +468,7 @@
                 const ebitdaAnalise = [];
                 for (let mes = 1; mes <= 12; mes++) {
                     const mes_data = ebitda.meses.find(m => m.mes === mes);
-                    ebitdaAnalise.push(mes_data ? mes_data.analise_vertical_planejado : 0);
+                    ebitdaAnalise.push(mes_data ? mes_data.analise_vertical_realizado : 0);
                 }
                 const ebitdaCtx = document.getElementById('ebitdaChart').getContext('2d');
                 new Chart(ebitdaCtx, {
