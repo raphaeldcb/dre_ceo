@@ -10,13 +10,13 @@
 
 # Try FallbackResource first (more reliable on shared hosting)
 <IfModule mod_dir.c>
-    FallbackResource /dre_ceo/index.php
+    FallbackResource /index.php
 </IfModule>
 
 # Enable rewrite engine for routing
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /dre_ceo/
+    RewriteBase /
 
     # Don't rewrite if accessing a real file or directory
     RewriteCond %{REQUEST_FILENAME} !-f
