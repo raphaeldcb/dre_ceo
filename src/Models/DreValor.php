@@ -15,6 +15,7 @@ class DreValor
     public float $valor_realizado;
     public float $variancia;
     public float $percentual_realizacao;
+    public ?float $analise_vertical_realizado;
     public ?string $analises;
     public string $status;
     public string $criado_em;
@@ -32,7 +33,7 @@ class DreValor
         $db = Database::getInstance();
         $stmt = $db->prepare(
             'SELECT id, area_id, dre_linha_id, mes, ano, valor_planejado, valor_realizado,
-                    variancia, percentual_realizacao, analises, status, criado_em, atualizado_em
+                    variancia, percentual_realizacao, analise_vertical_realizado, analises, status, criado_em, atualizado_em
              FROM dre_valores
              WHERE area_id = ? AND ano = ?
              ORDER BY dre_linha_id ASC, mes ASC'
@@ -60,7 +61,7 @@ class DreValor
         $db = Database::getInstance();
 
         $sql = 'SELECT id, area_id, dre_linha_id, mes, ano, valor_planejado, valor_realizado,
-                       variancia, percentual_realizacao, analises, status, criado_em, atualizado_em
+                       variancia, percentual_realizacao, analise_vertical_realizado, analises, status, criado_em, atualizado_em
                 FROM dre_valores
                 WHERE dre_linha_id = ? AND ano = ?';
 
@@ -103,7 +104,7 @@ class DreValor
 
         $stmt = $db->prepare(
             "SELECT id, area_id, dre_linha_id, mes, ano, valor_planejado, valor_realizado,
-                    variancia, percentual_realizacao, analises, status, criado_em, atualizado_em
+                    variancia, percentual_realizacao, analise_vertical_realizado, analises, status, criado_em, atualizado_em
              FROM dre_valores
              WHERE area_id IN ({$placeholders}) AND ano = ?
              ORDER BY area_id ASC, dre_linha_id ASC, mes ASC"
@@ -161,6 +162,7 @@ class DreValor
         $valor->valor_realizado = (float)$data['valor_realizado'];
         $valor->variancia = (float)$data['variancia'];
         $valor->percentual_realizacao = (float)$data['percentual_realizacao'];
+        $valor->analise_vertical_realizado = isset($data['analise_vertical_realizado']) ? (float)$data['analise_vertical_realizado'] : null;
         $valor->analises = $data['analises'] ?? null;
         $valor->status = $data['status'];
         $valor->criado_em = $data['criado_em'];
@@ -185,6 +187,7 @@ class DreValor
             'valor_realizado' => $this->valor_realizado,
             'variancia' => $this->variancia,
             'percentual_realizacao' => $this->percentual_realizacao,
+            'analise_vertical_realizado' => $this->analise_vertical_realizado,
             'analises' => $this->analises,
             'status' => $this->status,
             'criado_em' => $this->criado_em,
