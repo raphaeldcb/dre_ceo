@@ -434,10 +434,10 @@
             // Margem de Contribuição Chart
             const margem = areaData.linhas.find(l => l.id === 6);
             if (margem && margem.meses && margem.meses.length > 0) {
-                const margemVariacao = [];
+                const margemAnalise = [];
                 for (let mes = 1; mes <= 12; mes++) {
                     const mes_data = margem.meses.find(m => m.mes === mes);
-                    margemVariacao.push(mes_data ? (mes_data.variancia / 1000) : 0);
+                    margemAnalise.push(mes_data ? mes_data.analise_vertical_planejado : 0);
                 }
                 const margemCtx = document.getElementById('margemChart').getContext('2d');
                 new Chart(margemCtx, {
@@ -445,19 +445,19 @@
                     data: {
                         labels: months,
                         datasets: [{
-                            label: 'Variação (R$ mil)',
-                            data: margemVariacao,
-                            backgroundColor: margemVariacao.map(v => v >= 0 ? '#10b981' : '#ef4444'),
+                            label: 'Análise Vertical Planejado (%)',
+                            data: margemAnalise,
+                            backgroundColor: '#3b82f6',
                             borderRadius: 4,
                             borderWidth: 1,
-                            borderColor: margemVariacao.map(v => v >= 0 ? '#059669' : '#dc2626')
+                            borderColor: '#1e40af'
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: { legend: { display: true } },
-                        scales: { y: { beginAtZero: true } }
+                        scales: { y: { beginAtZero: true, max: 100 } }
                     }
                 });
             }
@@ -465,10 +465,10 @@
             // EBITDA Chart
             const ebitda = areaData.linhas.find(l => l.id === 8);
             if (ebitda && ebitda.meses && ebitda.meses.length > 0) {
-                const ebitdaVariacao = [];
+                const ebitdaAnalise = [];
                 for (let mes = 1; mes <= 12; mes++) {
                     const mes_data = ebitda.meses.find(m => m.mes === mes);
-                    ebitdaVariacao.push(mes_data ? (mes_data.variancia / 1000) : 0);
+                    ebitdaAnalise.push(mes_data ? mes_data.analise_vertical_planejado : 0);
                 }
                 const ebitdaCtx = document.getElementById('ebitdaChart').getContext('2d');
                 new Chart(ebitdaCtx, {
@@ -476,19 +476,19 @@
                     data: {
                         labels: months,
                         datasets: [{
-                            label: 'Variação (R$ mil)',
-                            data: ebitdaVariacao,
-                            backgroundColor: ebitdaVariacao.map(v => v >= 0 ? '#10b981' : '#ef4444'),
+                            label: 'Análise Vertical Planejado (%)',
+                            data: ebitdaAnalise,
+                            backgroundColor: '#8b5cf6',
                             borderRadius: 4,
                             borderWidth: 1,
-                            borderColor: ebitdaVariacao.map(v => v >= 0 ? '#059669' : '#dc2626')
+                            borderColor: '#6d28d9'
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: { legend: { display: true } },
-                        scales: { y: { beginAtZero: true } }
+                        scales: { y: { beginAtZero: true, max: 100 } }
                     }
                 });
             }
