@@ -8,20 +8,16 @@
     php_flag short_tags on
 </IfModule>
 
-# Try FallbackResource first (more reliable on shared hosting)
-<IfModule mod_dir.c>
-    FallbackResource /index.php
-</IfModule>
-
-# Enable rewrite engine for routing
+# Route everything through index.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
+    RewriteBase /dre_ceo/
 
-    # Don't rewrite if accessing a real file or directory
+    # Skip rewrite for real files and directories
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-l
 
-    # Route all requests to index.php
+    # Route all to index.php
     RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
