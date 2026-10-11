@@ -338,21 +338,35 @@
 
         // Calculate linear regression trend line
         function calculateTrendline(data) {
-            const n = data.length;
+            // Filter out zero values for trend calculation
+            const validPoints = [];
+            for (let i = 0; i < data.length; i++) {
+                if (data[i] > 0) {
+                    validPoints.push({ x: i + 1, y: data[i] });
+                }
+            }
+
+            if (validPoints.length < 2) {
+                // Not enough data points, return average line
+                const avg = data.reduce((a, b) => a + b) / data.length;
+                return Array(data.length).fill(avg);
+            }
+
+            const n = validPoints.length;
             let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
 
-            for (let i = 0; i < n; i++) {
-                sumX += i + 1;
-                sumY += data[i];
-                sumXY += (i + 1) * data[i];
-                sumX2 += (i + 1) * (i + 1);
+            for (let point of validPoints) {
+                sumX += point.x;
+                sumY += point.y;
+                sumXY += point.x * point.y;
+                sumX2 += point.x * point.x;
             }
 
             const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
             const intercept = (sumY - slope * sumX) / n;
 
             const trendline = [];
-            for (let i = 0; i < n; i++) {
+            for (let i = 0; i < data.length; i++) {
                 trendline.push(slope * (i + 1) + intercept);
             }
             return trendline;
