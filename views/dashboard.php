@@ -336,6 +336,34 @@
             }
         }
 
+        // Calculate linear regression trend line
+        function calculateTrendline(data) {
+            const n = data.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+
+            for (let i = 0; i < n; i++) {
+                sumX += i + 1;
+                sumY += data[i];
+                sumXY += (i + 1) * data[i];
+                sumX2 += (i + 1) * (i + 1);
+            }
+
+            const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+
+            const trendline = [];
+            for (let i = 0; i < n; i++) {
+                trendline.push(slope * (i + 1) + intercept);
+            }
+            return trendline;
+        }
+
+        // Calculate average
+        function calculateAverage(data) {
+            const validData = data.filter(d => d > 0);
+            return validData.length > 0 ? validData.reduce((a, b) => a + b) / validData.length : 0;
+        }
+
         function renderAreaCharts() {
             try {
                 console.log('renderAreaCharts called, areaData.linhas:', areaData.linhas);
@@ -439,19 +467,45 @@
                     const mes_data = margem.meses.find(m => m.mes === mes);
                     margemAnalise.push(mes_data ? mes_data.analise_vertical_realizado : 0);
                 }
+
+                const margemTrendline = calculateTrendline(margemAnalise);
+                const margemAverage = calculateAverage(margemAnalise);
+                const margemAverageArray = Array(12).fill(margemAverage);
+
                 const margemCtx = document.getElementById('margemChart').getContext('2d');
                 new Chart(margemCtx, {
                     type: 'bar',
                     data: {
                         labels: months,
-                        datasets: [{
-                            label: 'Análise Vertical Planejado (%)',
-                            data: margemAnalise,
-                            backgroundColor: '#3b82f6',
-                            borderRadius: 4,
-                            borderWidth: 1,
-                            borderColor: '#1e40af'
-                        }]
+                        datasets: [
+                            {
+                                label: 'Análise Vertical Realizado (%)',
+                                data: margemAnalise,
+                                backgroundColor: '#3b82f6',
+                                borderRadius: 4,
+                                borderWidth: 1,
+                                borderColor: '#1e40af',
+                                type: 'bar'
+                            },
+                            {
+                                label: 'Tendência',
+                                data: margemTrendline,
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                type: 'line'
+                            },
+                            {
+                                label: `Média (${margemAverage.toFixed(1)}%)`,
+                                data: margemAverageArray,
+                                borderColor: '#ef4444',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                borderDash: [5, 5],
+                                type: 'line'
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
@@ -470,19 +524,45 @@
                     const mes_data = ebitda.meses.find(m => m.mes === mes);
                     ebitdaAnalise.push(mes_data ? mes_data.analise_vertical_realizado : 0);
                 }
+
+                const ebitdaTrendline = calculateTrendline(ebitdaAnalise);
+                const ebitdaAverage = calculateAverage(ebitdaAnalise);
+                const ebitdaAverageArray = Array(12).fill(ebitdaAverage);
+
                 const ebitdaCtx = document.getElementById('ebitdaChart').getContext('2d');
                 new Chart(ebitdaCtx, {
                     type: 'bar',
                     data: {
                         labels: months,
-                        datasets: [{
-                            label: 'Análise Vertical Planejado (%)',
-                            data: ebitdaAnalise,
-                            backgroundColor: '#8b5cf6',
-                            borderRadius: 4,
-                            borderWidth: 1,
-                            borderColor: '#6d28d9'
-                        }]
+                        datasets: [
+                            {
+                                label: 'Análise Vertical Realizado (%)',
+                                data: ebitdaAnalise,
+                                backgroundColor: '#8b5cf6',
+                                borderRadius: 4,
+                                borderWidth: 1,
+                                borderColor: '#6d28d9',
+                                type: 'bar'
+                            },
+                            {
+                                label: 'Tendência',
+                                data: ebitdaTrendline,
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                tension: 0.4,
+                                type: 'line'
+                            },
+                            {
+                                label: `Média (${ebitdaAverage.toFixed(1)}%)`,
+                                data: ebitdaAverageArray,
+                                borderColor: '#ef4444',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                borderDash: [5, 5],
+                                type: 'line'
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
